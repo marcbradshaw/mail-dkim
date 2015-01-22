@@ -29,6 +29,7 @@ Mail::DKIM::Signer - generates a DKIM signature for a message
                   Domain => "example.org",
                   Selector => "selector1",
                   KeyFile => "private.key",
+                  Headers => "x-header:x-header2",
              );
 
   # read an email from a file handle
@@ -83,6 +84,7 @@ Construct an object-oriented signer.
                   Domain => "example.org",
                   Selector => "selector1",
                   KeyFile => "private.key",
+                  Headers => "x-header:x-header2",
              );
 
   # create a signer using a custom policy
@@ -112,6 +114,49 @@ are recognized:
 
 rather than using C<KeyFile>, use C<Key> to use an already-loaded
 L<Mail::DKIM::PrivateKey> object.
+
+=item Headers
+
+A colon separated list of headers to sign, this is added to the list
+of default headers as showin in the DKIM specification.
+For each specified header all headers of that type which are
+present in the message will be signed, but we will not oversign
+or sign headers which are not present.
+
+If greater control is required then a HashRef may be passed in.
+
+The Keys are the headers to sign, and the values are either the
+number of headers of that type to sign, or the special values
+'*' and '+'.
+
+* will sign ALL headers of that type present in the message.
+
++ will sign ALL + 1 headers of that type present in the message
+to prevent additional headers being added.
+
+You may override any of the default headers by including them
+in the hashref, and disable them by giving them a 0 value.
+
+Keys are case insensitive with the values being added upto the
+highest value.
+
+    Headers => {
+        'X-test'  => '*',
+        'x-test'  => '1',
+        'Subject' => '+',
+        'Sender'  => 0,
+    },
+
+The list of headers signed by default is as follows
+
+    From Sender Reply-To Subject Date
+    Message-ID To Cc MIME-Version
+    Content-Type Content-Transfer-Encoding Content-ID Content-Description
+    Resent-Date Resent-From Resent-Sender Resent-To Resent-cc
+    Resent-Message-ID
+    In-Reply-To References
+    List-Id List-Help List-Unsubscribe List-Subscribe
+    List-Post List-Owner List-Archive
 
 =back
 
@@ -438,10 +483,90 @@ my @DEFAULT_HEADERS = qw(From Sender Reply-To Subject Date
 	List-Id List-Help List-Unsubscribe List-Subscribe
 	List-Post List-Owner List-Archive);
 
+sub process_headers_hash
+{
+    my $self = shift;
+
+    my @headers;
+
+    # these are the header fields we found in the message we're signing
+    my @found_headers = @{$self->{header_field_names}};
+
+    # Convert all keys to lower case
+    foreach my $header ( keys %{ $self->{'Headers'} } ) {
+        next if $header eq lc $header;
+        if ( exists $self->{'Headers'}->{ lc $header } ) {
+            # Merge
+            my $first  = $self->{'Headers'}->{ lc $header };
+            my $second = $self->{'Headers'}->{ $header };
+            if ( $first eq '+' || $second eq '+' ) {
+                $self->{'Headers'}->{ lc $header} = '+';
+            }
+            elsif ( $first eq '*' || $second eq '*' ) {
+                $self->{'Headers'}->{ lc $header} = '*';
+            }
+            else {
+                $self->{'Headers'}->{ lc $header } = $first + $second;
+            }
+        }
+        else {
+            # Rename
+            $self->{'Headers'}->{ lc $header } = $self->{'Headers'}->{ $header }
+        }
+        delete $self->{'Headers'}->{ $header };
+    }
+
+    # Add the default headers
+    foreach my $default ( @DEFAULT_HEADERS ) {
+        if ( ! exists $self->{'Headers'}->{ lc $default } ) {
+            $self->{'Headers'}->{ lc $default } = '*';
+        }
+    }
+
+    # Build a count of found headers
+    my $header_counts = {};
+    foreach my $header ( @found_headers ) {
+        if ( ! exists $header_counts->{ lc $header } ) {
+            $header_counts->{ lc $header } = 1;
+        }
+        else {
+            $header_counts->{ lc $header } = $header_counts->{ lc $header } + 1;
+        }
+    }
+
+    foreach my $header ( sort keys %{ $self->{'Headers'} } ) {
+        my $want_count = $self->{'Headers'}->{$header};
+        my $have_count = $header_counts->{ lc $header } || 0;
+        my $add_count  = 0;
+        if ( $want_count eq '+' ) {
+            $add_count = $have_count + 1;
+        }
+        elsif ( $want_count eq '*' ) {
+            $add_count = $have_count;
+        }
+        else {
+            if ( $want_count > $have_count ) {
+                $add_count = $have_count;
+            }
+            else {
+                $add_count = $want_count;
+            }
+        }
+        for ( 1 .. $add_count ) {
+            push @headers, $header;
+        }
+    }
+    return join(":", @headers);
+}
+
 sub headers
 {
 	my $self = shift;
 	croak "unexpected argument" if @_;
+
+        if ( ref $self->{'Headers'} eq 'HASH' ) {
+            return $self->process_headers_hash();
+        }
 
 	# these are the header fields we found in the message we're signing
 	my @found_headers = @{$self->{header_field_names}};

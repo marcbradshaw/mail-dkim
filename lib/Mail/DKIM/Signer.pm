@@ -118,34 +118,14 @@ L<Mail::DKIM::PrivateKey> object.
 =item Headers
 
 A colon separated list of headers to sign, this is added to the list
-of default headers as showin in the DKIM specification.
+of default headers as shown in in the DKIM specification.
+
 For each specified header all headers of that type which are
 present in the message will be signed, but we will not oversign
 or sign headers which are not present.
 
-If greater control is required then a HashRef may be passed in.
-
-The Keys are the headers to sign, and the values are either the
-number of headers of that type to sign, or the special values
-'*' and '+'.
-
-* will sign ALL headers of that type present in the message.
-
-+ will sign ALL + 1 headers of that type present in the message
-to prevent additional headers being added.
-
-You may override any of the default headers by including them
-in the hashref, and disable them by giving them a 0 value.
-
-Keys are case insensitive with the values being added upto the
-highest value.
-
-    Headers => {
-        'X-test'  => '*',
-        'x-test'  => '1',
-        'Subject' => '+',
-        'Sender'  => 0,
-    },
+If you require greater control over signed headers please use
+the extended_headers() method instead.
 
 The list of headers signed by default is as follows
 
@@ -377,8 +357,38 @@ Call this when finished feeding in the message.
 
   $dkim->CLOSE;
 
+
 This method finishes the canonicalization process, computes a hash,
 and generates a signature.
+
+=head2 extended_headers()
+
+This method overrides the headers to be signed and allows more
+control than is possible with the Headers property in the constructor.
+
+The method expextes a HashRef to be passed in.
+
+The Keys are the headers to sign, and the values are either the
+number of headers of that type to sign, or the special values
+'*' and '+'.
+
+* will sign ALL headers of that type present in the message.
+
++ will sign ALL + 1 headers of that type present in the message
+to prevent additional headers being added.
+
+You may override any of the default headers by including them
+in the hashref, and disable them by giving them a 0 value.
+
+Keys are case insensitive with the values being added upto the
+highest value.
+
+    Headers => {
+        'X-test'  => '*',
+        'x-test'  => '1',
+        'Subject' => '+',
+        'Sender'  => 0,
+    },
 
 =head2 add_signature()
 
@@ -493,70 +503,95 @@ sub process_headers_hash
     my @found_headers = @{$self->{header_field_names}};
 
     # Convert all keys to lower case
-    foreach my $header ( keys %{ $self->{'Headers'} } ) {
+    foreach my $header ( keys %{ $self->{'ExtendedHeaders'} } )
+    {
         next if $header eq lc $header;
-        if ( exists $self->{'Headers'}->{ lc $header } ) {
+        if ( exists $self->{'ExtendedHeaders'}->{ lc $header } )
+        {
             # Merge
-            my $first  = $self->{'Headers'}->{ lc $header };
-            my $second = $self->{'Headers'}->{ $header };
-            if ( $first eq '+' || $second eq '+' ) {
-                $self->{'Headers'}->{ lc $header} = '+';
+            my $first  = $self->{'ExtendedHeaders'}->{ lc $header };
+            my $second = $self->{'ExtendedHeaders'}->{ $header };
+            if ( $first eq '+' || $second eq '+' )
+            {
+                $self->{'ExtendedHeaders'}->{ lc $header} = '+';
             }
-            elsif ( $first eq '*' || $second eq '*' ) {
-                $self->{'Headers'}->{ lc $header} = '*';
+            elsif ( $first eq '*' || $second eq '*' )
+            {
+                $self->{'ExtendedHeaders'}->{ lc $header} = '*';
             }
-            else {
-                $self->{'Headers'}->{ lc $header } = $first + $second;
+            else
+            {
+                $self->{'ExtendedHeaders'}->{ lc $header } = $first + $second;
             }
         }
-        else {
+        else
+        {
             # Rename
-            $self->{'Headers'}->{ lc $header } = $self->{'Headers'}->{ $header }
+            $self->{'ExtendedHeaders'}->{ lc $header } = $self->{'ExtendedHeaders'}->{ $header }
         }
-        delete $self->{'Headers'}->{ $header };
+        delete $self->{'ExtendedHeaders'}->{ $header };
     }
 
     # Add the default headers
-    foreach my $default ( @DEFAULT_HEADERS ) {
-        if ( ! exists $self->{'Headers'}->{ lc $default } ) {
-            $self->{'Headers'}->{ lc $default } = '*';
+    foreach my $default ( @DEFAULT_HEADERS )
+    {
+        if ( ! exists $self->{'ExtendedHeaders'}->{ lc $default } )
+        {
+            $self->{'ExtendedHeaders'}->{ lc $default } = '*';
         }
     }
 
     # Build a count of found headers
     my $header_counts = {};
-    foreach my $header ( @found_headers ) {
-        if ( ! exists $header_counts->{ lc $header } ) {
+    foreach my $header ( @found_headers )
+    {
+        if ( ! exists $header_counts->{ lc $header } )
+        {
             $header_counts->{ lc $header } = 1;
         }
-        else {
+        else
+        {
             $header_counts->{ lc $header } = $header_counts->{ lc $header } + 1;
         }
     }
 
-    foreach my $header ( sort keys %{ $self->{'Headers'} } ) {
-        my $want_count = $self->{'Headers'}->{$header};
+    foreach my $header ( sort keys %{ $self->{'ExtendedHeaders'} } )
+    {
+        my $want_count = $self->{'ExtendedHeaders'}->{$header};
         my $have_count = $header_counts->{ lc $header } || 0;
         my $add_count  = 0;
-        if ( $want_count eq '+' ) {
+        if ( $want_count eq '+' )
+        {
             $add_count = $have_count + 1;
         }
-        elsif ( $want_count eq '*' ) {
+        elsif ( $want_count eq '*' )
+        {
             $add_count = $have_count;
         }
-        else {
-            if ( $want_count > $have_count ) {
+        else
+        {
+            if ( $want_count > $have_count )
+            {
                 $add_count = $have_count;
             }
-            else {
+            else
+            {
                 $add_count = $want_count;
             }
         }
-        for ( 1 .. $add_count ) {
+        for ( 1 .. $add_count )
+        {
             push @headers, $header;
         }
     }
     return join(":", @headers);
+}
+
+sub extended_headers
+{
+    my $self = shift;
+    $self->{'ExtendedHeaders'} = shift;
+    return;
 }
 
 sub headers
@@ -564,7 +599,8 @@ sub headers
 	my $self = shift;
 	croak "unexpected argument" if @_;
 
-        if ( ref $self->{'Headers'} eq 'HASH' ) {
+        if (exists $self->{'ExtendedHeaders'})
+        {
             return $self->process_headers_hash();
         }
 

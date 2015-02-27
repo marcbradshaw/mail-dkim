@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::Simple tests => 20;
+use Test::Simple tests => 31;
 
 use Mail::DKIM::Signer;
 
@@ -78,6 +78,48 @@ my $sigstr = $dkim->signature->as_string;
 ok($sigstr =~ /subject/i, "subject was signed");
 ok($sigstr =~ /from/i, "from was signed");
 ok($sigstr !~ /received/i, "received was excluded");
+ok($sigstr !~ /comments/i, "comments was excluded");
+
+# check if the identity got included
+ok($sigstr =~ /i=bob\@/, "got expected identity value");
+# check if timestamp got included
+ok($sigstr =~ /t=\d+/, "found timestamp value");
+
+# add some headers to the previous email for extended tests
+$sample_email = "X-Test: 2\015\012"
+        . "X-Tests: 2\015\012"
+        . "Date: blah\015\012"
+        . "X-Test: 1\015\012"
+        . "X-Tests: 1\015\012"
+	. $sample_email;
+$sample_email =~ s/^Comments:.*?$/comments: this can be changed/m;
+
+$dkim = Mail::DKIM::Signer->new(
+		Algorithm => "rsa-sha1",
+		Method => "relaxed",
+		Domain => "example.org",
+		Selector => "test",
+		Identity => "bob\@example.org",
+		Timestamp => time(),
+		KeyFile => $keyfile);
+ok($dkim, "new() works");
+
+$dkim->extended_headers({ 'Subject' => '+', 'Date' => '0', 'X-Test' => '*', 'X-Tests' => 1, });
+
+$dkim->PRINT($sample_email);
+$dkim->CLOSE;
+
+ok($dkim->signature, "signature() works");
+print "# signature=" . $dkim->signature->as_string . "\n";
+
+# check whether the signature includes/excludes certain header fields
+$sigstr = $dkim->signature->as_string;
+ok($sigstr =~ /subject:subject/i, "subject was over signed");
+ok($sigstr =~ /x-test:x-test/i, "x-test was all signed");
+ok($sigstr =~ /x-tests/i, "x-tests was signed");
+ok($sigstr !~ /x-tests:x-tests/i, "x-tests was signed only once");
+ok($sigstr =~ /from/i, "from was signed");
+ok($sigstr !~ /date/i, "date was excluded");
 ok($sigstr !~ /comments/i, "comments was excluded");
 
 # check if the identity got included

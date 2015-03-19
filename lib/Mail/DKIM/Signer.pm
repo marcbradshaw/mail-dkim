@@ -366,7 +366,7 @@ and generates a signature.
 This method overrides the headers to be signed and allows more
 control than is possible with the Headers property in the constructor.
 
-The method expextes a HashRef to be passed in.
+The method expects a HashRef to be passed in.
 
 The Keys are the headers to sign, and the values are either the
 number of headers of that type to sign, or the special values

@@ -311,8 +311,22 @@ sub check_hash_algorithm
 	# check hash algorithm
 	if (my $h = $self->get_tag("h"))
 	{
+
 		my @list = split(/:/, $h);
-		unless (grep { $_ eq $hash_algorithm } @list)
+
+                my @filtered_list;
+                foreach my $algorithm ( @list ) {
+                        if ( grep { $algorithm eq $_ } qw{ sha1 sha256 } ) {
+                                push @filtered_list, $algorithm;
+                        }
+                        else {
+                                warn "Ignoring unknown hash algorithm $algorithm";
+                        }
+                }
+
+                return 1 if ! @filtered_list;
+
+		unless (grep { $_ eq $hash_algorithm } @filtered_list)
 		{
 			die "does not support hash algorithm '$hash_algorithm'\n";
 		}

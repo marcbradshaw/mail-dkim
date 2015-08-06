@@ -1,3 +1,12 @@
+Mail-DKIM
+=========
+
+Fork of Mail::DKIM [SVN](svn://svn.code.sf.net/p/dkimproxy/code/Mail-DKIM/trunk) with local patches on top.
+
+- Allow greater control over which headers are signed by Signer
+
+[![Build Status](https://travis-ci.org/marcbradshaw/mail-dkim.svg?branch=master)](https://travis-ci.org/marcbradshaw/mail-dkim)
+
 Mail-DKIM version 0.41
 ======================
 

@@ -70,11 +70,10 @@ sub load
 		my @data;
 		open my $file, "<", $prms{'File'}
 			or die "Error: cannot read $prms{File}: $!\n";
-		while (<$file>) {
-			chomp;
-			/^---/ and
-				next;
-			push @data, $_;
+		while (my $line = <$file>) {
+			chomp $line;
+                        next if $line =~ /^---/;
+                        push @data, $line;
 		}
 		$self->{'DATA'} = join '', @data;
                 close $file;

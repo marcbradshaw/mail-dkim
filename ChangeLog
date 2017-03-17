@@ -1,3 +1,5 @@
+ -- VERSION 0.41 --
+
 2013-02-07: Jason Long <jlong@messiah.edu>
  * lib/Mail/DKIM/Verifier.pm (add_signature): call fetch_public_key() iff
    the signature passes a validity check;

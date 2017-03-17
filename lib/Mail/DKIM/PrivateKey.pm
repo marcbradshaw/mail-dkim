@@ -68,15 +68,16 @@ sub load
 		$self->{'DATA'} = $prms{'Data'};
 	} elsif (defined $prms{'File'}) {	
 		my @data;
-		open FILE, "<", $prms{'File'}
+		open my $file, "<", $prms{'File'}
 			or die "Error: cannot read $prms{File}: $!\n";
-		while (<FILE>) {
+		while (<$file>) {
 			chomp;
 			/^---/ and
 				next;
 			push @data, $_;
 		}
 		$self->{'DATA'} = join '', @data;
+                close $file;
 	} elsif ($prms{'Cork'}) {
 		$self->{'CORK'} = $prms{'Cork'};
 	} else {

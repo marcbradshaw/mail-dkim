@@ -1,9 +1,6 @@
 Mail-DKIM
 =========
 
-Fork of Mail::DKIM [SVN](svn://svn.code.sf.net/p/dkimproxy/code/Mail-DKIM/trunk) with local patches on top.
-
-- Allow greater control over which headers are signed by Signer
 
 [![Build Status](https://travis-ci.org/marcbradshaw/mail-dkim.svg?branch=master)](https://travis-ci.org/marcbradshaw/mail-dkim)
 
@@ -65,3 +62,6 @@ at your option, any later version of Perl 5 you may have available.
 SEE ALSO
 
 The DKIM proxy home page, http://dkimproxy.sourceforge.net/.
+
+[SourceForge SVN Repo](svn://svn.code.sf.net/p/dkimproxy/code/Mail-DKIM/trunk)
+

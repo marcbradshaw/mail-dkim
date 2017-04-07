@@ -8,6 +8,13 @@ Version 0.41
       accepted. Such signatures are not known to appear in real life.
       (rt.cpan.org issue #83176)
 
+  * Allow greater control over which headers are signed by Signer
+    * Added the extended_headers() method to allow headers
+      to be oversigned, or skipped.
+
+  * bugfixes:
+    * PrivateKey file is now closed correctly after being read.
+    * Use lexical rather than named file handle
 
 Version 0.40 - released 2013-02-07
 

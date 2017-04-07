@@ -77,6 +77,10 @@ they always sign their messages. See L<Mail::DKIM::Policy>.
 
 Jason Long, E<lt>jlong@messiah.eduE<gt>
 
+=head1 CONTRIBUTORS
+
+Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006-2007, 2009 by Messiah College

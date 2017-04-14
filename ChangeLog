@@ -1,5 +1,31 @@
  -- VERSION 0.41 --
 
+2017-04-14: Marc Bradshaw <marc@marcbradshaw.net>
+
+ * commit aac893fdbaa7f8ccd5d37fa7f20d1785406cda51
+   Author: Marc Bradshaw <marc@marcbradshaw.net>
+   Date:   Fri Mar 17 14:53:53 2017 +1100
+    Avoid use of $_ in read loop
+    RT 106485: Mail::DKIM::PrivateKey->load tampering $_ and <FILE>
+
+ * commit 06934f259e392b2a3cf94560e6051d9e522d0bf3
+   Author: Marc Bradshaw <marc@marcbradshaw.net>
+   Date:   Fri Mar 17 14:44:44 2017 +1100
+    Ensure PrivateKey file is closed properly.
+    Store PrivateKey file handle in lexical variable and close it
+    once we are done.
+    RT 120638: Mail::DKIM::PrivateKey does not close FILE
+
+ * commit 9e7c1c4cb78a6cb1cf396ece4379c7ed2c44c974
+   Author: Marc Bradshaw <marc@marcbradshaw.net>
+   Date:   Fri Feb 27 12:08:11 2015 +1100
+    Allow greater control over signed headers
+
+ * commit 8291c034dc7db4394e9df80e70b8cbe8428a38c2
+   Author: Marc Bradshaw <marc@marcbradshaw.net>
+   Date:   Fri Jan 23 09:54:02 2015 +1100
+    Allow greater control over which headers are signed by Signer
+
 2013-02-07: Jason Long <jlong@messiah.edu>
  * lib/Mail/DKIM/Verifier.pm (add_signature): call fetch_public_key() iff
    the signature passes a validity check;

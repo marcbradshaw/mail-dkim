@@ -1,7 +1,6 @@
 Mail-DKIM
 =========
 
-
 [![Build Status](https://travis-ci.org/marcbradshaw/mail-dkim.svg?branch=master)](https://travis-ci.org/marcbradshaw/mail-dkim)
 
 Mail-DKIM version 0.41
@@ -61,7 +60,7 @@ at your option, any later version of Perl 5 you may have available.
 
 SEE ALSO
 
-The DKIM proxy home page, http://dkimproxy.sourceforge.net/.
+The DKIM proxy home page, http://dkimproxy.sourceforge.net/
 
-[SourceForge SVN Repo](svn://svn.code.sf.net/p/dkimproxy/code/Mail-DKIM/trunk)
+SourceForge SVN Repo, svn://svn.code.sf.net/p/dkimproxy/code/Mail-DKIM/trunk
 

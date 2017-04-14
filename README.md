@@ -45,7 +45,8 @@ BUGS
 Some details of the specification are not completely implemented.
 See the TODO file for a list of things I know about.
 
-Report bugs to Jason Long <jason@long.name>.
+Please report bugs to the [CPAN RT](https://rt.cpan.org/Public/Dist/Display.html?Name=Mail-DKIM) or [github issue tracker](https://github.com/fastmail/mail-dkim/issues).
+
 If `make test' fails, please include the versions of your
 installed Crypt::OpenSSL::RSA module and OpenSSL libraries.
 

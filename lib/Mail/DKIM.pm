@@ -73,6 +73,12 @@ author signing policy is supposed to identify the practice of the message
 author, so you could for example reject a message from an author who claims
 they always sign their messages. See L<Mail::DKIM::Policy>.
 
+Please report bugs to the CPAN RT, or github issue tracker.
+
+https://rt.cpan.org/Public/Dist/Display.html?Name=Mail-DKIM
+
+https://github.com/fastmail/mail-dkim/issues
+
 =head1 AUTHOR
 
 Jason Long, E<lt>jlong@messiah.eduE<gt>

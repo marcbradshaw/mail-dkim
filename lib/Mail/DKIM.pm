@@ -48,6 +48,8 @@ It currently tries to implement these specifications:
 
 =item RFC4870, for DomainKeys
 
+=item draft-ietf-dmarc-arc-protocol-06, for ARC
+
 =back
 
 The module uses an object-oriented interface. You use one of
@@ -60,7 +62,12 @@ the L<Mail::DKIM::Verifier> class. Simple, eh?
 L<Mail::DKIM::Signer>,
 L<Mail::DKIM::Verifier>
 
+L<Mail::DKIM::ARC::Signer>,
+L<Mail::DKIM::ARC::Verifier>
+
 http://dkimproxy.sourceforge.net/
+
+https://github.com/fastmail/authentication_milter
 
 =head1 KNOWN BUGS
 
@@ -86,10 +93,12 @@ Jason Long, E<lt>jlong@messiah.eduE<gt>
 =head1 CONTRIBUTORS
 
 Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
+Bron Gondwana, E<lt>brong@fastmailteam.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006-2007, 2009 by Messiah College
+Copyright (C) 2017 by FastMail Pty Ltd
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.6 or,

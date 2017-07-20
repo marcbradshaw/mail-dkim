@@ -311,7 +311,7 @@ sub check_canonicalization
 
 	my ($c1, $c2) = $self->canonicalization;
 
-	my @known = ("nowsp", "simple", "relaxed");
+	my @known = ("nowsp", "simple", "relaxed", "seal");
 	return undef unless (grep { $_ eq $c1 } @known);
 	return undef unless (grep { $_ eq $c2 } @known);
 	return 1;

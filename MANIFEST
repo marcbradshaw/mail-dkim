@@ -19,6 +19,7 @@ lib/Mail/DKIM/Canonicalization/dk_nofws.pm
 lib/Mail/DKIM/Canonicalization/dk_simple.pm
 lib/Mail/DKIM/Canonicalization/nowsp.pm
 lib/Mail/DKIM/Canonicalization/relaxed.pm
+lib/Mail/DKIM/Canonicalization/seal.pm
 lib/Mail/DKIM/Canonicalization/simple.pm
 lib/Mail/DKIM/Common.pm
 lib/Mail/DKIM/DkimPolicy.pm

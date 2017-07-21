@@ -6,6 +6,8 @@ use warnings;
 package Mail::DKIM;
 our $VERSION = 0.42;
 
+our $SORTTAGS = 0;
+
 1;
 __END__
 
@@ -56,6 +58,13 @@ The module uses an object-oriented interface. You use one of
 two different classes, depending on whether you are signing or verifying
 a message. To sign, use the L<Mail::DKIM::Signer> class. To verify, use
 the L<Mail::DKIM::Verifier> class. Simple, eh?
+
+Likewise for ARC, use the ARC modules L<Mail::DKIM::ARC::Signer> and
+L<Mail::DKIM::ARC::Verifier>
+
+If you're sending to test libraries which expect the tags in headers
+to be sorted, you can set $Mail::DKIM::SORTTAGS to a true value, and
+all created headers will get sorted keys
 
 =head1 SEE ALSO
 

@@ -275,6 +275,7 @@ sub finish_header
                          Algorithm => $self->{"Algorithm"},
                          Headers => $self->headers,
                          Instance => $self->{_Instance},
+                         Method => "relaxed/relaxed",
                          Domain => $self->{"Domain"},
                          Selector => $self->{"Selector"},
                          Key => $self->{"Key"},

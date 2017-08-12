@@ -40,6 +40,10 @@ Decide whether you want to "sign" or "verify" messages.
 To sign, see the Mail::DKIM::Signer module.
 To verify, see the Mail::DKIM::Verifier module.
 
+If you want to sign or verify ARC headers
+(https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-06)
+then look at Mail::DKIM::ARC::Signer and Mail::DKIM::ARC::Verifier
+
 BUGS
 
 Some details of the specification are not completely implemented.

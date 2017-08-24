@@ -119,6 +119,8 @@ sub RunScenario {
           'Chain' => $arc_result,
           'Headers' => $sigheaders,
         );
+        $arc->{ 'NoDefaultHeaders' } = 1;
+        $arc->{ 'Timestamp' } = $t;
         $Mail::DKIM::SORTTAGS = 1;
         Mail::DKIM::DNS::resolver( $FakeResolver );
         $arc->PRINT( $message );

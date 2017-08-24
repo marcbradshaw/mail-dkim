@@ -469,7 +469,7 @@ sub finish_body
 		$algorithm->signature->result($result, $details);
         }
 
-        my $seals = $self->{seals};
+        my $seals = $self->{seals} || [];
         my $messages = $self->{messages};
         unless (@$seals) {
             $self->{result} = 'none';

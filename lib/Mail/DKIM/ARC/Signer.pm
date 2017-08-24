@@ -552,7 +552,6 @@ my @DEFAULT_HEADERS = qw(From Sender Reply-To Subject Date
 sub process_headers_hash
 {
     my $self = shift;
-
     my @headers;
 
     # these are the header fields we found in the message we're signing
@@ -589,11 +588,14 @@ sub process_headers_hash
     }
 
     # Add the default headers
-    foreach my $default ( @DEFAULT_HEADERS )
+    if ( ! $self->{ 'NoDefaultHeaders' } )
     {
-        if ( ! exists $self->{'ExtendedHeaders'}->{ lc $default } )
+        foreach my $default ( @DEFAULT_HEADERS )
         {
-            $self->{'ExtendedHeaders'}->{ lc $default } = '*';
+            if ( ! exists $self->{'ExtendedHeaders'}->{ lc $default } )
+            {
+                $self->{'ExtendedHeaders'}->{ lc $default } = '*';
+            }
         }
     }
 
@@ -664,7 +666,11 @@ sub headers
 	my @found_headers = @{$self->{header_field_names}};
 
 	# these are the headers we actually want to sign
-	my @wanted_headers = @DEFAULT_HEADERS;
+        my @wanted_headers;
+        if ( ! $self->{ 'NoDefaultHeaders' } )
+        {
+	    @wanted_headers = @DEFAULT_HEADERS;
+        }
 	if ($self->{Headers})
 	{
 		push @wanted_headers, split /:/, $self->{Headers};

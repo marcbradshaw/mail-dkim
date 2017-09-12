@@ -49,7 +49,7 @@ sub RunScenario {
     my $comment     = $scenario->{ 'comment' };
     my $domain      = $scenario->{ 'domain '};
     my $sel         = $scenario->{ 'sel' };
-    my $private_key = $scenario->{ 'privatekey' };
+    my $private_key = $scenario->{ 'privatekey' } || q{};
 
     my @chompkey = split( "\n", $private_key );
     shift @chompkey;
@@ -68,6 +68,7 @@ sub RunScenario {
     my $FakeResolver = Net::DNS::Resolver::Mock->new();
     $FakeResolver->zonefile_parse( $ZoneFile );
 
+    TEST:
     foreach my $test ( sort keys %$tests ) {
         my $testhash = $tests->{ $test };
 
@@ -81,6 +82,11 @@ sub RunScenario {
         $message =~ s/[\n\r]*$//;
         $message =~ s/\015?\012/\015\012/g;
 
+        if ( $cv eq q{} ) {
+            $cv = 'fail';
+            diag( "Null test cv for $description - $test" );
+        }
+
         my $arc_result;
 
             eval {
@@ -92,9 +98,13 @@ sub RunScenario {
               $arc_result = $arc->result();
               my $arc_result_detail = $arc->result_detail();
               if ( $self->{ 'operation' } eq 'validate' ) {
-              my $mycv = $arc_result eq 'Pass' ? 'pass' : 'fail';
-              is( lc $mycv, lc $cv, "$description - $test ARC Result" );
-              print "    $cv = $mycv $arc_result ( $arc_result_detail )\n";
+                my $mycv = lc $arc_result eq 'pass' ? 'Pass' :
+                           lc $arc_result eq 'none' ? 'None' : 'Fail';
+
+                is( lc $mycv, lc $cv, "$description - $test ARC Result" );
+                if ( lc $mycv ne lc $cv ) {
+                    diag( "Got: $arc_result ( $arc_result_detail )" );
+                }
               }
             };
             if ( my $error = $@ ) {

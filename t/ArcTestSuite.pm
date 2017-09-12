@@ -9,7 +9,7 @@ use YAML::XS;
 use Net::DNS::Resolver::Mock;
 
 use Mail::DKIM::ARC::Signer;
-use Mail::DKIM::Arc::Verifier;
+use Mail::DKIM::ARC::Verifier;
 
 use Test::More;
 

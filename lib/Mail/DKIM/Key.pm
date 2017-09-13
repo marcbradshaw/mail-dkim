@@ -71,6 +71,7 @@ sub calculate_EM
 	my %digest_encoding = (
 		"SHA-1" =>   pack("H*", "3021300906052B0E03021A05000414"),
 		"SHA-256" => pack("H*", "3031300d060960864801650304020105000420"),
+                "SHA-512" => pack("H*", "3051300d060960864801650304020305000440"),
 		);
 
 	defined $digest_encoding{$digest_algorithm}

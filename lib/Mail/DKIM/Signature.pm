@@ -13,6 +13,7 @@ use warnings;
 use Mail::DKIM::PublicKey;
 use Mail::DKIM::Algorithm::rsa_sha1;
 use Mail::DKIM::Algorithm::rsa_sha256;
+use Mail::DKIM::Algorithm::rsa_sha512;
 
 package Mail::DKIM::Signature;
 use base "Mail::DKIM::KeyValueList";
@@ -500,6 +501,7 @@ sub get_algorithm_class
 	my $class =
 		$algorithm eq "rsa-sha1" ? "Mail::DKIM::Algorithm::rsa_sha1" :
 		$algorithm eq "rsa-sha256" ? "Mail::DKIM::Algorithm::rsa_sha256" :
+		$algorithm eq "rsa-sha512" ? "Mail::DKIM::Algorithm::rsa_sha512" :
 		undef;
 	return $class;
 }
@@ -625,7 +627,8 @@ sub hash_algorithm
 	my $algorithm = $self->algorithm;
 
 	return $algorithm eq "rsa-sha1" ? "sha1" :
-		$algorithm eq "rsa-sha256" ? "sha256" : undef;
+		$algorithm eq "rsa-sha256" ? "sha256" :
+		$algorithm eq "rsa-sha512" ? "sha512" : undef;
 }
 
 =head2 headerlist() - get or set the signed header fields (h=) field

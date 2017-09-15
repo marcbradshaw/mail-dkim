@@ -18,7 +18,7 @@ my $Tests = ArcTestSuite->new();
 
 $Tests->LoadFile( 't/arc_test_suite/arc-draft-sign-tests.yml' );
 $Tests->SetOperation( 'sign' );
-#$Tests->RunAllScenarios();
+$Tests->RunAllScenarios();
 
 done_testing();
 

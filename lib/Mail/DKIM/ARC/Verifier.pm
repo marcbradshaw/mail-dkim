@@ -514,12 +514,14 @@ sub finish_body
 
         #    3.  All ARC-Seal header fields MUST have a chain value (cv=) status
         #        of "pass" (except the first which MUST be "none"); and
-        my $cv = $seals->[1]->get_tag('cv');
-        if ($cv ne 'none') {
+        if ( $seals->[1] ) {
+            my $cv = $seals->[1]->get_tag('cv');
+            if ($cv ne 'none') {
 	        $self->{signature} = $seals->[1]->signature;
 		$self->{result} = 'fail';
 		$self->{details} = "first ARC-Seal must be cv=none";
             
+            }
         }
         foreach my $i (2..$#$seals) {
                 my $cv = $seals->[$i]->get_tag('cv');

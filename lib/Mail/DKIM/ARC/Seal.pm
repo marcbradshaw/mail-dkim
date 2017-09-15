@@ -92,6 +92,10 @@ sub new
 	return $self;
 }
 
+sub body_hash {
+    # Not defined for ARC-Seal
+    return;
+}
 
 sub DEFAULT_PREFIX
 {

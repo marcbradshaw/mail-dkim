@@ -85,7 +85,7 @@ sub new
 	$self->chain($prms{'Chain'} || 'none');
 	$self->domain($prms{'Domain'});
 	$self->selector($prms{'Selector'});
-	$self->timestamp($prms{'Timestamp'}) if defined $prms{'Timestamp'};
+	$self->timestamp( defined $prms{'Timestamp'} ? $prms{'Timestamp'} : time() );
 	$self->expiration($prms{'Expiration'}) if defined $prms{'Expiration'};
 	$self->key($prms{'Key'}) if defined $prms{'Key'};
 

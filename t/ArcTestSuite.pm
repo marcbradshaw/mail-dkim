@@ -128,9 +128,9 @@ sub RunScenario {
           'Key' => Mail::DKIM::PrivateKey->load( 'Data' => $private_key ),
           'Chain' => $arc_result,
           'Headers' => $sigheaders,
+          'Timestamp' => $t,
         );
         $arc->{ 'NoDefaultHeaders' } = 1;
-        $arc->{ 'Timestamp' } = $t;
         $Mail::DKIM::SORTTAGS = 1;
         Mail::DKIM::DNS::resolver( $FakeResolver );
         $arc->PRINT( $message );

@@ -530,11 +530,6 @@ sub finish_body
         $self->{result} = 'fail';
         $self->{details} = "first ARC-Seal must be cv=none";
     }
-    else {
-        $self->{result} = 'fail';
-        $self->{details} = "first ARC-Seal is missing";
-        return;
-    }
     foreach my $i (2..$#$seals) {
         my $cv = $seals->[$i]->get_tag('cv');
         if ($cv ne 'pass') {

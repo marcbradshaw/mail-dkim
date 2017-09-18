@@ -81,7 +81,6 @@ sub finish_header
 		$self->_output_indexed_header($args{Headers}, 'ARC-Message-Signature', $n);
 		$self->_output_indexed_header($args{Headers}, 'ARC-Seal', $n);
 	}
-
 	$self->_output_indexed_header($args{Headers}, 'ARC-Authentication-Results', $i);
 	$self->_output_indexed_header($args{Headers}, 'ARC-Message-Signature', $i);
 	# we don't add ARC-Seal at our index, because that is this signature, and it's

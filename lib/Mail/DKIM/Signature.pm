@@ -91,7 +91,7 @@ sub parse
 
 	# remove field name, if present
 	my $prefix = $class->prefix();
-	if ($string =~ s/^($prefix)//)
+	if ($string =~ s/^($prefix)//i)
 	{
 		# save the field name (capitalization), so that it can be
 		# restored later

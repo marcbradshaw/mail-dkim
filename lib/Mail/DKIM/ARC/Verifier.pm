@@ -108,7 +108,7 @@ use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;
 use Mail::Address;
 use Carp;
-our $VERSION = 0.42;
+our $VERSION = 0.44;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
 
 sub init

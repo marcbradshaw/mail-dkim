@@ -30,12 +30,12 @@ ok($@ =~ /^NODATA$/, "reason given is NODATA");
 
 SKIP:
 {
-    skip "These tests are currently failing due to external factors",2;
+    skip "These tests are currently failing due to external factors",1;
 
 $pubkey = eval { Mail::DKIM::PublicKey->fetch(
 		Protocol => "dns",
 		Selector => "foo",
-		Domain => "blackhole.messiah.edu",
+		Domain => "blackhole.authmilter.org",
 		) };
 my $E = $@;
 print "# got error: $E" if $E;
@@ -43,14 +43,16 @@ ok(!$pubkey
 	&& $E && $E =~ /(timeout|timed? out)/,
 	"timeout error fetching public key");
 
+}
+
 $pubkey = eval { Mail::DKIM::PublicKey->fetch(
 		Protocol => "dns",
 		Selector => "foo",
-		Domain => "blackhole2.messiah.edu",
+		Domain => "blackhole2.authmilter.org",
 		) };
-$E = $@;
+my $E = $@;
 print "# got error: $E" if $E;
 ok(!$pubkey
 	&& $E && $E =~ /SERVFAIL/,
 	"SERVFAIL dns error fetching public key");
-}
+

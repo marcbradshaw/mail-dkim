@@ -69,15 +69,21 @@ SKIP:
 		"timeout error fetching policy");
 }
 
-$policy = eval { Mail::DKIM::AuthorDomainPolicy->fetch(
+SKIP:
+{
+	skip "test depends on specific DNS setup at test site", 1
+		unless ($ENV{DNS_TESTS} && $ENV{DNS_TESTS} > 1);
+
+        $policy = eval { Mail::DKIM::AuthorDomainPolicy->fetch(
 		Protocol => "dns",
 		Domain => "blackhole.authmilter.org",
 		) };
-my $E = $@;
-print "# got error: $E" if $E;
-ok(!$policy
+    my $E = $@;
+    print "# got error: $E" if $E;
+    ok(!$policy
 	&& $E && $E =~ /SERVFAIL/,
 	"SERVFAIL dns error fetching policy");
+}
 
 # test a policy record where _domainkey.DOMAIN gives a
 # DNS error, but DOMAIN itself is valid
@@ -88,7 +94,7 @@ SKIP: {
     		Protocol => "dns",
     		Domain => "blackhole2.authmilter.org",
     		) };
-    $E = $@;
+    my $E = $@;
     print "# got error: $E" if $E;
     ok(!$policy
     	&& $E && $E =~ /SERVFAIL/,

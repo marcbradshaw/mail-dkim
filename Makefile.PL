@@ -14,6 +14,7 @@ WriteMakefile(
 			Test::Simple => 0,  # only needed for `make test'
                         YAML::XS => 0,
                         Net::DNS::Resolver::Mock => 0,
+                        Test::RequiresInternet => 0,
                         },
 	ABSTRACT_FROM  => 'lib/Mail/DKIM.pm', # retrieve abstract from module
 	AUTHOR         => 'Jason Long <jason@long.name>',

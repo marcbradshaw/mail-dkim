@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Test::More tests => 5;
+use Test::RequiresInternet;
 
 use Mail::DKIM::Verifier;
 $Mail::DKIM::DNS::TIMEOUT = 3;

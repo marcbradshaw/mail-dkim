@@ -43,31 +43,29 @@ encoded value.
 
 =cut
 
-sub new
-{
-        my $class = shift;
-        my %prms = @_;
-        my $self = {};
-        bless $self, $class;
+sub new {
+    my $class = shift;
+    my %prms  = @_;
+    my $self  = {};
+    bless $self, $class;
 
-        $self->instance($prms{'Instance'}) if exists $prms{'Instance'};
-        $self->algorithm($prms{'Algorithm'} || 'rsa-sha256');
-        $self->signature($prms{'Signature'});
-        $self->canonicalization($prms{'Method'}) if exists $prms{'Method'};
-        $self->domain($prms{'Domain'});
-        $self->headerlist($prms{'Headers'});
-        $self->protocol($prms{'Query'}) if exists $prms{'Query'};
-        $self->selector($prms{'Selector'});
-        $self->timestamp($prms{'Timestamp'}) if defined $prms{'Timestamp'};
-        $self->expiration($prms{'Expiration'}) if defined $prms{'Expiration'};
-        $self->key($prms{'Key'}) if defined $prms{'Key'};
+    $self->instance( $prms{'Instance'} ) if exists $prms{'Instance'};
+    $self->algorithm( $prms{'Algorithm'} || 'rsa-sha256' );
+    $self->signature( $prms{'Signature'} );
+    $self->canonicalization( $prms{'Method'} ) if exists $prms{'Method'};
+    $self->domain( $prms{'Domain'} );
+    $self->headerlist( $prms{'Headers'} );
+    $self->protocol( $prms{'Query'} ) if exists $prms{'Query'};
+    $self->selector( $prms{'Selector'} );
+    $self->timestamp( $prms{'Timestamp'} )   if defined $prms{'Timestamp'};
+    $self->expiration( $prms{'Expiration'} ) if defined $prms{'Expiration'};
+    $self->key( $prms{'Key'} )               if defined $prms{'Key'};
 
-        return $self;
+    return $self;
 }
 
-sub DEFAULT_PREFIX
-{
-        return 'ARC-Message-Signature:';
+sub DEFAULT_PREFIX {
+    return 'ARC-Message-Signature:';
 }
 
 =head2 instance() - get or set the signing instance (i=) field
@@ -82,15 +80,14 @@ check that the i= value is a number.
 
 =cut
 
-sub instance
-{
+sub instance {
     my $self = shift;
 
     # ARC identities must be a number
     if (@_) {
         my $val = int(shift);
-        die "INVALID instance $val" unless ($val > 0 and $val < 1025);
-        $self->set_tag('i', $val);
+        die "INVALID instance $val" unless ( $val > 0 and $val < 1025 );
+        $self->set_tag( 'i', $val );
     }
 
     my $i = $self->get_tag('i');

@@ -53,7 +53,7 @@ Mail::DKIM::ARC::Verifier - verifies an ARC-Sealed message
 
 =head1 DESCRIPTION
 
-The verifier object allows an email message to be scanned for ARC seals
+The verifier object allows an email message to be scanned for ARC
 seals and their associated signatures to be verified. The verifier
 tracks the state of the message as it is read into memory. When the
 message has been completely read, the signatures are verified and the
@@ -89,14 +89,23 @@ Constructs an object-oriented verifier.
 
   my $arc = Mail::DKIM::ARC::Verifier->new(%options);
 
-The only option supported at this time is:
+The only options supported at this time is:
 
 =over
 
-=item Debug_Canonicalization
+=item AS_Canonicalization
 
-if specified, the canonicalized message for the first signature
+if specified, the canonicalized message for the ARC-Seal
 is written to the referenced string or file handle.
+
+=item AMA_Canonicalization
+
+if specified, the canonicalized message for the ARC-Message-Signature
+is written to the referenced string or file handle.
+
+=item Strict
+
+If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 
 =back
 
@@ -116,6 +125,7 @@ sub init
     my $self = shift;
     $self->SUPER::init;
     $self->{signatures} = [];
+    $self->{result} = undef;		# we're done once this is set
 }
 
 # @{$arc->{signatures}}
@@ -146,7 +156,7 @@ sub handle_header
 
     $self->SUPER::handle_header($field_name, $contents);
 
-    if (lc($field_name) eq "arc-message-signature")
+    if (lc($field_name) eq 'arc-message-signature')
     {
         eval
         {
@@ -188,15 +198,16 @@ sub handle_header
 
 sub add_signature
 {
-    my $self = shift;
-    croak "wrong number of arguments" unless (@_ == 1);
-    my ($signature) = @_;
+    my ($self, $signature) = @_;
+    croak 'wrong number of arguments' unless (@_ == 2);
+
+    return if $self->{result};		# already failed
 
     push @{$self->{signatures}}, $signature;
 
     unless ($self->check_signature($signature))
     {
-        $signature->result("invalid",
+        $signature->result('invalid',
             $self->{signature_reject_reason});
         return;
     }
@@ -209,7 +220,7 @@ sub add_signature
                 $signature->algorithm);
     my $algorithm = $algorithm_class->new(
                 Signature => $signature,
-                Debug_Canonicalization => $self->{Debug_Canonicalization},
+                Debug_Canonicalization => $signature->isa('Mail::DKIM::ARC::Seal')? $self->{AS_Canonicalization}:$self->{AMS_Canonicalization},
             );
 
     # push through the headers parsed prior to the signature header
@@ -227,19 +238,75 @@ sub add_signature
     $self->{algorithms} ||= [];
     push @{$self->{algorithms}}, $algorithm;
 
-    if ($signature->isa('Mail::DKIM::ARC::Seal')) {
-        $self->{seals}[$signature->instance()] = $signature;
+    # check for bogus tags (should be done much earlier but better late than never)
+    # tagkeys is uniq'd via a hash, rawtaglen counts all the tags
+    my @tagkeys = keys %{$signature->{tags_by_name}};
+    my $rawtaglen = $#{$signature->{tags}};
+
+    # crock: ignore empty clause after trailing semicolon
+    $rawtaglen-- if $signature->{tags}->[$#{$signature->{tags}}]->{raw} =~ /^\s*$/;
+    
+    # duplicate tags
+    if($rawtaglen != $#tagkeys) {
+    	    $self->{result} = 'fail';	# bogus
+    	    $self->{details} = "Duplicate tag in signature";
+    	    return;
     }
 
-    if ($signature->isa('Mail::DKIM::ARC::MessageSignature')) {
-        $self->{messages}[$signature->instance()] = $signature;
+    # invalid tag name
+    if( grep { ! m{[a-z][a-z0-9_]*}i } @tagkeys) {
+	    $self->{result} = 'fail';	# bogus
+	    $self->{details} = "Invalid tag in signature";
+	    return;
+    }
+
+    if ($signature->isa('Mail::DKIM::ARC::Seal')) {
+	my ($instance);
+	$instance = $signature->instance()||"";
+
+	if($instance !~ m{^\d+$} or $instance < 1 or $instance > 1024) {
+	    $self->{result} = 'fail';	# bogus
+	    $self->{details} = sprintf "Invalid ARC-Seal instance '%s'", $instance;
+	    return;
+	}
+
+	if($self->{seals}[$instance]) {
+	    $self->{result} = 'fail';	# dup
+	    if( $signature eq $self->{seals}[$instance]) {
+		$self->{details} = sprintf "Duplicate ARC-Seal %d", $instance;
+	    } else {
+		$self->{details} = sprintf "Redundant ARC-Seal %d", $instance;
+	    }
+	    return;
+	}
+
+        $self->{seals}[$instance] = $signature;
+    } elsif ($signature->isa('Mail::DKIM::ARC::MessageSignature')) {
+	my $instance = $signature->instance()||'';
+
+	if($instance !~ m{^\d+$} or $instance < 1 or $instance > 1024) {
+	    $self->{result} = 'fail';	# bogus
+	    $self->{details} = sprintf "Invalid ARC-Message-Signature instance '%s'", $instance;
+	    return;
+	}
+
+	if($self->{messages}[$instance]) {
+	    $self->{result} = 'fail';	# dup
+	    if( $signature->as_string() eq $self->{messages}[$instance]->as_string()) {
+		$self->{details} = sprintf "Duplicate ARC-Message-Signature %d", $instance;
+	    } else {
+		$self->{details} = sprintf "Redundant ARC-Message-Signature %d", $instance;
+	    }
+	    return;
+	}
+        $self->{messages}[$instance] = $signature;
     }
 }
 
 sub check_signature
 {
     my $self = shift;
-    croak "wrong number of arguments" unless (@_ == 1);
+    croak 'wrong number of arguments' unless (@_ == 1);
     my ($signature) = @_;
 
     unless ($signature->check_version)
@@ -247,24 +314,25 @@ sub check_signature
         # unsupported version
         if (defined $signature->version)
         {
-            $self->{signature_reject_reason} = "unsupported version "
+            $self->{signature_reject_reason} = 'unsupported version '
                 . $signature->version;
         }
         else
         {
-            $self->{signature_reject_reason} = "missing v tag";
+            $self->{signature_reject_reason} = 'missing v tag';
         }
         return 0;
     }
 
     unless ($signature->algorithm
-        && $signature->get_algorithm_class($signature->algorithm))
+        && $signature->get_algorithm_class($signature->algorithm)
+	&& (!$self->{Strict} || $signature->algorithm ne 'rsa-sha1')) # no more SHA1 for us in strict mode
     {
         # unsupported algorithm
-        $self->{signature_reject_reason} = "unsupported algorithm";
+        $self->{signature_reject_reason} = 'unsupported algorithm';
         if (defined $signature->algorithm)
         {
-            $self->{signature_reject_reason} .= " " . $signature->algorithm;
+            $self->{signature_reject_reason} .= ' ' . $signature->algorithm;
         }
         return 0;
     }
@@ -272,10 +340,10 @@ sub check_signature
     unless ($signature->check_canonicalization)
     {
         # unsupported canonicalization method
-        $self->{signature_reject_reason} = "unsupported canonicalization";
+        $self->{signature_reject_reason} = 'unsupported canonicalization';
         if (defined $signature->canonicalization)
         {
-            $self->{signature_reject_reason} .= " " . $signature->canonicalization;
+            $self->{signature_reject_reason} .= ' ' . $signature->canonicalization;
         }
         return 0;
     }
@@ -284,36 +352,36 @@ sub check_signature
     {
         # unsupported query protocol
         $self->{signature_reject_reason} =
-            !defined($signature->protocol) ? "missing q tag"
-            : "unsupported query protocol, q=" . $signature->protocol;
+            !defined($signature->protocol) ? 'missing q tag'
+            : 'unsupported query protocol, q=' . $signature->protocol;
         return 0;
     }
 
     unless ($signature->check_expiration)
     {
         # signature has expired
-        $self->{signature_reject_reason} = "signature is expired";
+        $self->{signature_reject_reason} = 'signature is expired';
         return 0;
     }
 
     unless (defined $signature->domain)
     {
         # no domain specified
-        $self->{signature_reject_reason} = "missing d tag";
+        $self->{signature_reject_reason} = 'missing d tag';
         return 0;
     }
 
     if ($signature->domain eq '')
     {
         # blank domain
-        $self->{signature_reject_reason} = "invalid domain in d tag";
+        $self->{signature_reject_reason} = 'invalid domain in d tag';
         return 0;
     }
 
     unless (defined $signature->selector)
     {
         # no selector specified
-        $self->{signature_reject_reason} = "missing s tag";
+        $self->{signature_reject_reason} = 'missing s tag';
         return 0;
     }
 
@@ -323,7 +391,7 @@ sub check_signature
 sub check_public_key
 {
     my $self = shift;
-    croak "wrong number of arguments" unless (@_ == 2);
+    croak 'wrong number of arguments' unless (@_ == 2);
     my ($signature, $public_key) = @_;
 
     my $result = 0;
@@ -341,11 +409,12 @@ sub check_public_key
 
         # HACK- DomainKeys signatures are allowed to have an empty g=
         # tag in the public key
-        my $empty_g_means_wildcard = $signature->isa("Mail::DKIM::DkSignature");
+	#        my $empty_g_means_wildcard = $signature->isa("Mail::DKIM::DkSignature");
 
         # check public key's granularity
         $result &&= $public_key->check_granularity(
-                $signature->instance, $empty_g_means_wildcard);
+                $signature->instance, 0);
+		#                $signature->instance, $empty_g_means_wildcard);
 
         die $@ if $@;
     };
@@ -372,26 +441,39 @@ sub finish_header
     if (@{$self->{signatures}} == 0
         && !defined($self->{signature_reject_reason}))
     {
-        $self->{result} = "none";
+        $self->{result} = 'none';
         return;
+    }
+
+    # check for duplicate AAR headers (dup AS and AMS checked in add_signature)
+    my @aars = [];
+    foreach my $hdr (@{$self->{headers}}) {
+	if(my ($i) = $hdr =~ m{ARC-Authentication-Results:\s*i=(\d+)\s*;}i) {
+	    if(defined $aars[$i]) {
+		$self->{result} = 'fail';
+		$self->{details} = "Duplicate ARC-Authentication-Results header $1";
+		return;
+	    }
+	    $aars[$i] = $hdr;
+	}
     }
 
     foreach my $algorithm (@{$self->{algorithms}})
     {
-        $algorithm->finish_header(Headers => $self->{headers});
+        $algorithm->finish_header(Headers => $self->{headers}, Chain => 'pass');
     }
 
     # stop processing signatures that are already known to be invalid
     @{$self->{algorithms}} = grep
         {
             my $sig = $_->signature;
-            !($sig->result && $sig->result eq "invalid");
+            !($sig->result && $sig->result eq 'invalid');
         } @{$self->{algorithms}};
 
     if (@{$self->{algorithms}} == 0
         && @{$self->{signatures}} > 0)
     {
-        $self->{result} = $self->{signatures}->[0]->result || "invalid";
+        $self->{result} = $self->{signatures}->[0]->result || 'invalid';
         $self->{details} = $self->{signatures}->[0]->{verify_details} || $self->{signature_reject_reason};
         return;
     }
@@ -405,6 +487,34 @@ sub _check_and_verify_signature
         # check signature
         my $signature = $algorithm->signature;
 
+	if (not $signature->get_tag('d')) { # All sigs must have a D tag
+            $self->{signature_reject_reason} = 'missing D tag';
+            return ('fail', $self->{signature_reject_reason});
+	}
+
+	if (not $signature->get_tag('b')) { # All sigs must have a B tag
+            $self->{signature_reject_reason} = 'missing B tag';
+            return ('fail', $self->{signature_reject_reason});
+	}
+
+	if ($signature->isa('Mail::DKIM::ARC::Seal')) { # AMS tests
+	    unless($signature->get_tag('t')) { # ADMS must have a T tag
+		$self->{signature_reject_reason} = 'missing T tag';
+		return ('fail', $self->{signature_reject_reason});
+	    }
+	} else { # AMS tests
+	    unless($signature->get_tag('bh')) { # AMS must have a BH tag
+		$self->{signature_reject_reason} = 'missing BH tag';
+		return ('fail', $self->{signature_reject_reason});
+	    }
+	    if(($signature->get_tag('h')||'') =~ /arc-seal/i) { # cannot cover AS
+		$self->{signature_reject_reason} = 'Arc-Message-Signature covers Arc-Seal';
+		return ('fail', $self->{signature_reject_reason});
+	    }
+	}
+
+	# AMS signature must not 
+
         # get public key
         my $pkey;
         eval
@@ -416,13 +526,22 @@ sub _check_and_verify_signature
             my $E = $@;
             chomp $E;
             $self->{signature_reject_reason} = "public key: $E";
-            return ("invalid", $self->{signature_reject_reason});
+            return ('invalid', $self->{signature_reject_reason});
         }
 
         unless ($self->check_public_key($signature, $pkey))
         {
-            return ("invalid", $self->{signature_reject_reason});
+            return ('invalid', $self->{signature_reject_reason});
         }
+
+	# make sure key is big enough
+	my $keysize = $pkey->cork->size*8; # in bits
+	if ($keysize < 1024 && $self->{Strict}) {
+		$self->{signature_reject_reason} = "Key length $keysize too short";
+		return ('fail', $self->{signature_reject_reason});
+
+	}
+
 
         # verify signature
         my $result;
@@ -430,7 +549,7 @@ sub _check_and_verify_signature
         local $@ = undef;
         eval
         {
-            $result = $algorithm->verify() ? "pass" : "fail";
+            $result = $algorithm->verify() ? 'pass' : 'fail';
             $details = $algorithm->{verification_details} || $@;
         };
         if ($@)
@@ -445,7 +564,7 @@ sub _check_and_verify_signature
             {
                 $E = "OpenSSL $1";
             }
-            $result = "fail";
+            $result = 'fail';
             $details = $E;
         }
     return ($result, $details);
@@ -454,6 +573,8 @@ sub _check_and_verify_signature
 sub finish_body
 {
     my $self = shift;
+
+    return if $self->{result};		# already failed
 
     foreach my $algorithm (@{$self->{algorithms}}) {
         # finish canonicalizing
@@ -469,10 +590,10 @@ sub finish_body
     }
 
     my $seals = $self->{seals} || [];
-    my $messages = $self->{messages};
-    unless (@$seals) {
+    my $messages = $self->{messages} || [];
+    unless (@$seals or @$messages) {
         $self->{result} = 'none';
-        $self->{details} = 'no ARC-Seal headers found';
+        $self->{details} = 'no ARC headers found';
         return;
     }
 
@@ -488,12 +609,18 @@ sub finish_body
 
     if ( $#$seals == 0 ) {
         $self->{result} = 'fail';
-        $self->{details} = "missing ARC-Seal 1";
+        $self->{details} = 'missing ARC-Seal 1';
         return;
     }
     if ( $#$messages == 0 ) {
         $self->{result} = 'fail';
-        $self->{details} = "missing ARC-Message-Signature 1";
+        $self->{details} = 'missing ARC-Message-Signature 1';
+        return;
+    }
+
+    if($#$messages > $#$seals) {
+        $self->{result} = 'fail';
+        $self->{details} = 'missing Arc-Seal ' . $#$messages;
         return;
     }
 
@@ -525,10 +652,11 @@ sub finish_body
     #    3.  All ARC-Seal header fields MUST have a chain value (cv=) status
     #        of "pass" (except the first which MUST be "none"); and
     my $cv = $seals->[1]->get_tag('cv');
-    if ($cv ne 'none') {
+    if (!defined $cv or $cv ne 'none') {
         $self->{signature} = $seals->[1]->signature;
         $self->{result} = 'fail';
-        $self->{details} = "first ARC-Seal must be cv=none";
+        $self->{details} = 'first ARC-Seal must be cv=none';
+	return;	
     }
     foreach my $i (2..$#$seals) {
         my $cv = $seals->[$i]->get_tag('cv');
@@ -567,11 +695,11 @@ sub result_detail
         my $type = ref($signature) eq 'Mail::DKIM::ARC::Seal' ? 'as' :
                    ref($signature) eq 'Mail::DKIM::ARC::MessageSignature' ? 'ams' :
                    ref($signature);
-        push @items, "$type." . $signature->instance() . '.' . $signature->domain()
-                              . '=' . $signature->result_detail();
+        push @items, "$type." . ($signature->instance()||'') . '.' . ($signature->domain()||'(none)')
+                              . '=' . ($signature->result_detail()||'?');
     }
 
-    return $self->{result} . " (" . join(', ', @items) . ')';
+    return $self->{result} . ' (' . join(', ', @items) . ')';
 }
 
 =head1 METHODS
@@ -750,7 +878,7 @@ instance and header-name for each signature.
 sub signatures
 {
 	my $self = shift;
-	croak "unexpected argument" if @_;
+	croak 'unexpected argument' if @_;
 
 	return @{$self->{signatures}};
 }

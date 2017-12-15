@@ -11,6 +11,7 @@ use warnings;
 
 package Mail::DKIM::ARC::MessageSignature;
 use base "Mail::DKIM::Signature";
+use Carp;
 
 =head1 NAME
 
@@ -23,11 +24,11 @@ This is a subclass of Mail::DKIM::Signature
 =head2 new() - create a new signature from parameters
 
   my $signature = Mail::DKIM::ARC::MessageSignature->new(
-                      [ Algorithm => "rsa-sha1", ]
+                      [ Algorithm => "rsa-sha256", ]
                       [ Signature => $base64, ]
                       [ Method => "relaxed", ]
                       [ Domain => "example.org", ]
-	              [ Instance => 1, ]
+                      [ Instance => 1, ]
                       [ Headers => "from:subject:date:message-id", ]
                       [ Query => "dns", ]
                       [ Selector => "alpha", ]
@@ -50,7 +51,7 @@ sub new
         bless $self, $class;
 
         $self->instance($prms{'Instance'}) if exists $prms{'Instance'};
-        $self->algorithm($prms{'Algorithm'} || "rsa-sha1");
+        $self->algorithm($prms{'Algorithm'} || 'rsa-sha256');
         $self->signature($prms{'Signature'});
         $self->canonicalization($prms{'Method'}) if exists $prms{'Method'};
         $self->domain($prms{'Domain'});
@@ -66,7 +67,7 @@ sub new
 
 sub DEFAULT_PREFIX
 {
-	return "ARC-Message-Signature:";
+        return 'ARC-Message-Signature:';
 }
 
 =head2 instance() - get or set the signing instance (i=) field
@@ -76,23 +77,24 @@ sub DEFAULT_PREFIX
 Instances must be integers less than 1024 according to the spec.
 
 NOTE: the i= field is "Identity" in DKIM and is a base64 value, but in
-ARC it is "Instance" and an integer.
+ARC it is "Instance" and an integer.  The parsing routine does not
+check that the i= value is a number.
 
 =cut
 
 sub instance
 {
-	my $self = shift;
+    my $self = shift;
 
-	# ARC identities must be a number
-	if (@_) {
-		my $val = int(shift);
-		die "INVALID instance $val" unless ($val > 0 and $val < 1025);
-		$self->set_tag("i", $val);
-	}
+    # ARC identities must be a number
+    if (@_) {
+        my $val = int(shift);
+        die "INVALID instance $val" unless ($val > 0 and $val < 1025);
+        $self->set_tag('i', $val);
+    }
 
-	my $i = $self->get_tag("i");
-	return $i;
+    my $i = $self->get_tag('i');
+    return $i;
 }
 
 =head1 SEE ALSO

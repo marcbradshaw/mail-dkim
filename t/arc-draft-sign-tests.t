@@ -3,22 +3,21 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
 use Test::More;
 
 use lib 't';
 
-unless ( $ENV{ARC_TESTING} ) {
-    plan( skip_all => "ARC tests currently a work in progress" );
-}
+plan tests => 51; # number of tests currently in the signing yaml
+
+my $nskip = 0;
+$nskip = $ARGV[0] if @ARGV > 0;
 
 use ArcTestSuite;
 
-my $Tests = ArcTestSuite->new();
+my $Tests = new ArcTestSuite();
 
 $Tests->LoadFile( 't/arc_test_suite/arc-draft-sign-tests.yml' );
 $Tests->SetOperation( 'sign' );
-$Tests->RunAllScenarios();
+$Tests->RunAllScenarios($nskip);
 
 done_testing();
-

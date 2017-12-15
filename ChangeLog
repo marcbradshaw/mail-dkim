@@ -1,3 +1,11 @@
+ -- VERSION 0.50 --
+
+2017-12-14: John Levine <john.levine@standcore.com>
+
+* Make ARC code work a lot better
+
+* Add new arcsign.pl and arcverify.pl scripts
+
  -- VERSION 0.44 --
 
 2017-10-19: Marc Bradshaw <marc@marcbradshaw.net>

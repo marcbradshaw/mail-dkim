@@ -15,7 +15,7 @@ use Mail::DKIM::Algorithm::rsa_sha1;
 use Mail::DKIM::Algorithm::rsa_sha256;
 
 package Mail::DKIM::Signature;
-use base "Mail::DKIM::KeyValueList";
+use base 'Mail::DKIM::KeyValueList';
 use Carp;
 
 =head1 NAME
@@ -27,14 +27,14 @@ Mail::DKIM::Signature - represents a DKIM-Signature header
 =head2 new() - create a new signature from parameters
 
   my $signature = Mail::DKIM::Signature->new(
-                      [ Algorithm => "rsa-sha1", ]
+                      [ Algorithm => 'rsa-sha1', ]
                       [ Signature => $base64, ]
-                      [ Method => "relaxed", ]
-                      [ Domain => "example.org", ]
+                      [ Method => 'relaxed', ]
+                      [ Domain => 'example.org', ]
                       [ Identity => 'user@example.org', ]
-                      [ Headers => "from:subject:date:message-id", ]
-                      [ Query => "dns", ]
-                      [ Selector => "alpha", ]
+                      [ Headers => 'from:subject:date:message-id', ]
+                      [ Query => 'dns', ]
+                      [ Selector => 'alpha', ]
                       [ Timestamp => time(), ]
                       [ Expiration => time() + 86400, ]
                   );
@@ -47,8 +47,8 @@ sub new {
     my $self  = {};
     bless $self, $class;
 
-    $self->version("1");
-    $self->algorithm( $prms{'Algorithm'} || "rsa-sha1" );
+    $self->version('1');
+    $self->algorithm( $prms{'Algorithm'} || 'rsa-sha1' );
     $self->signature( $prms{'Signature'} );
     $self->canonicalization( $prms{'Method'} ) if exists $prms{'Method'};
     $self->domain( $prms{'Domain'} );
@@ -66,7 +66,7 @@ sub new {
 =head2 parse() - create a new signature from a DKIM-Signature header
 
   my $sig = Mail::DKIM::Signature->parse(
-                  "DKIM-Signature: a=rsa-sha1; b=yluiJ7+0=; c=relaxed"
+                  'DKIM-Signature: a=rsa-sha1; b=yluiJ7+0=; c=relaxed'
             );
 
 Constructs a signature by parsing the provided DKIM-Signature header
@@ -81,7 +81,7 @@ of the as_string method.
 
 sub parse {
     my $class = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($string) = @_;
 
     # remove line terminator, if present
@@ -135,10 +135,10 @@ sub algorithm {
     my $self = shift;
 
     if (@_) {
-        $self->set_tag( "a", shift );
+        $self->set_tag( 'a', shift );
     }
 
-    my $a = $self->get_tag("a");
+    my $a = $self->get_tag('a');
     return defined $a ? lc $a : undef;
 }
 
@@ -166,7 +166,7 @@ sub as_string_debug {
     my $self = shift;
 
     return $self->prefix()
-      . join( ";", map { ">" . $_->{raw} . "<" } @{ $self->{tags} } );
+      . join( ';', map { '>' . $_->{raw} . '<' } @{ $self->{tags} } );
 }
 
 =head2 as_string_without_data() - signature without the signature data
@@ -185,10 +185,10 @@ incorporating this part of the signature into the signed message.
 
 sub as_string_without_data {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     my $alt = $self->clone;
-    $alt->signature("");
+    $alt->signature('');
 
     return $alt->as_string;
 }
@@ -212,9 +212,9 @@ sub body_count {
 
     # set new body count if provided
     (@_)
-      and $self->set_tag( "l", shift );
+      and $self->set_tag( 'l', shift );
 
-    return $self->get_tag("l");
+    return $self->get_tag('l');
 }
 
 =head2 body_hash() - get or set the body hash (bh=) field
@@ -233,9 +233,9 @@ sub body_hash {
 
     # set new body hash if provided
     (@_)
-      and $self->set_tag( "bh", shift );
+      and $self->set_tag( 'bh', shift );
 
-    my $result = $self->get_tag("bh");
+    my $result = $self->get_tag('bh');
     if ( defined $result ) {
         $result =~ s/\s+//gs;
     }
@@ -244,7 +244,7 @@ sub body_hash {
 
 =head2 canonicalization() - get or set the canonicalization (c=) field
 
-  $signature->canonicalization("relaxed", "simple");
+  $signature->canonicalization('relaxed', 'simple');
 
   ($header, $body) = $signature->canonicalization;
 
@@ -262,19 +262,19 @@ sub canonicalization {
     my $self = shift;
 
     if (@_) {
-        $self->set_tag( "c", join( "/", @_ ) );
+        $self->set_tag( 'c', join( '/', @_ ) );
     }
 
-    my $c = $self->get_tag("c");
+    my $c = $self->get_tag('c');
     $c = lc $c if defined $c;
     if ( not $c ) {
-        $c = "simple/simple";
+        $c = 'simple/simple';
     }
     my ( $c1, $c2 ) = split( /\//, $c, 2 );
     if ( not defined $c2 ) {
 
         # default body canonicalization is "simple"
-        $c2 = "simple";
+        $c2 = 'simple';
     }
 
     if (wantarray) {
@@ -295,7 +295,7 @@ sub check_canonicalization {
 
     my ( $c1, $c2 ) = $self->canonicalization;
 
-    my @known = ( "nowsp", "simple", "relaxed", "seal" );
+    my @known = ( 'nowsp', 'simple', 'relaxed', 'seal' );
     return undef unless ( grep { $_ eq $c1 } @known );
     return undef unless ( grep { $_ eq $c2 } @known );
     return 1;
@@ -325,12 +325,12 @@ sub check_protocol {
 
     foreach my $prot ( split /:/, $self->protocol ) {
         my ( $type, $options ) = split( /\//, $prot, 2 );
-        if ( $type eq "dns" ) {
-            return ("dns/txt") if $options && $options eq "txt";
+        if ( $type eq 'dns' ) {
+            return ('dns/txt') if $options && $options eq 'txt';
 
             # prior to DKIM version 1, the '/txt' part was optional
             if ( !$v ) {
-                return ("dns/txt") if !defined($options);
+                return ('dns/txt') if !defined($options);
             }
         }
     }
@@ -347,7 +347,7 @@ sub check_version {
 
     # check version
     if ( my $version = $self->version ) {
-        my @ALLOWED_VERSIONS = ( "0.5", "1" );
+        my @ALLOWED_VERSIONS = ( '0.5', '1' );
         return ( grep { $_ eq $version } @ALLOWED_VERSIONS );
     }
 
@@ -370,10 +370,10 @@ sub data {
     my $self = shift;
 
     if (@_) {
-        $self->set_tag( "b", shift );
+        $self->set_tag( 'b', shift );
     }
 
-    my $b = $self->get_tag("b");
+    my $b = $self->get_tag('b');
     $b =~ tr/\015\012 \t//d if defined $b;
     return $b;
 }
@@ -387,7 +387,7 @@ sub decode_qp {
     my $res = shift;
 
     #TODO- should I worry about non-ASCII systems here?
-    $res =~ s/=([\da-fA-F]{2})/pack("C", hex($1))/ge
+    $res =~ s/=([\da-fA-F]{2})/pack('C', hex($1))/ge
       if defined $res;
     return $res;
 }
@@ -408,7 +408,7 @@ sub encode_qp {
 }
 
 sub DEFAULT_PREFIX {
-    return "DKIM-Signature:";
+    return 'DKIM-Signature:';
 }
 
 sub prefix {
@@ -423,7 +423,7 @@ sub prefix {
 =head2 domain() - get or set the domain (d=) field
 
   my $d = $signature->domain;          # gets the domain value
-  $signature->domain("example.org");   # sets the domain value
+  $signature->domain('example.org');   # sets the domain value
 
 The domain of the signing entity, as specified in the signature.
 This is the domain that will be queried for the public key.
@@ -438,10 +438,10 @@ sub domain {
     my $self = shift;
 
     if (@_) {
-        $self->set_tag( "d", shift );
+        $self->set_tag( 'd', shift );
     }
 
-    my $d = $self->get_tag("d");
+    my $d = $self->get_tag('d');
     return defined $d ? lc $d : undef;
 }
 
@@ -458,20 +458,20 @@ sub expiration {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "x", shift );
+      and $self->set_tag( 'x', shift );
 
-    return $self->get_tag("x");
+    return $self->get_tag('x');
 }
 
 # allows the type of signature to determine what "algorithm" gets used
 sub get_algorithm_class {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($algorithm) = @_;
 
     my $class =
-        $algorithm eq "rsa-sha1"   ? "Mail::DKIM::Algorithm::rsa_sha1"
-      : $algorithm eq "rsa-sha256" ? "Mail::DKIM::Algorithm::rsa_sha256"
+        $algorithm eq 'rsa-sha1'   ? 'Mail::DKIM::Algorithm::rsa_sha1'
+      : $algorithm eq 'rsa-sha256' ? 'Mail::DKIM::Algorithm::rsa_sha256'
       :                              undef;
     return $class;
 }
@@ -561,7 +561,7 @@ sub get_public_key {
 
 =head2 get_tag() - access the raw value of a tag in this signature
 
-  my $raw_identity = $signature->get_tag("i");
+  my $raw_identity = $signature->get_tag('i');
 
 Use this method to access a tag not already supported by Mail::DKIM,
 or if you want to bypass decoding of the value by Mail::DKIM.
@@ -569,7 +569,7 @@ or if you want to bypass decoding of the value by Mail::DKIM.
 For example, the raw i= (identity) tag is encoded in quoted-printable
 form. If you use the identity() method, Mail::DKIM will decode from
 quoted-printable before returning the value. But if you use
-get_tag("i"), you can access the encoded quoted-printable form of
+get_tag('i'), you can access the encoded quoted-printable form of
 the value.
 
 =head2 hash_algorithm() - access the hash algorithm specified in this signature
@@ -590,14 +590,14 @@ sub hash_algorithm {
     my $algorithm = $self->algorithm;
 
     return
-        $algorithm eq "rsa-sha1"   ? "sha1"
-      : $algorithm eq "rsa-sha256" ? "sha256"
+        $algorithm eq 'rsa-sha1'   ? 'sha1'
+      : $algorithm eq 'rsa-sha256' ? 'sha256'
       :                              undef;
 }
 
 =head2 headerlist() - get or set the signed header fields (h=) field
 
-  $signature->headerlist("a:b:c");
+  $signature->headerlist('a:b:c');
 
   my $headerlist = $signature->headerlist;
 
@@ -616,9 +616,9 @@ sub headerlist {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "h", shift );
+      and $self->set_tag( 'h', shift );
 
-    my $h = $self->get_tag("h") || "";
+    my $h = $self->get_tag('h') || '';
 
     # remove whitespace next to colons
     $h =~ s/\s+:/:/g;
@@ -658,7 +658,7 @@ it to this method.
 Identity values are encoded in the signature in quoted-printable format.
 Using this method will translate to/from quoted-printable as necessary.
 If you want the raw quoted-printable version of the identity, use
-$signature->get_tag("i").
+$signature->get_tag('i').
 
 =cut
 
@@ -667,14 +667,14 @@ sub identity {
 
     # set new identity if provided
     (@_)
-      and $self->set_tag( "i", encode_qp(shift) );
+      and $self->set_tag( 'i', encode_qp(shift) );
 
-    my $i = $self->get_tag("i");
+    my $i = $self->get_tag('i');
     if ( defined $i ) {
         return decode_qp($i);
     }
     else {
-        return '@' . ( $self->domain || "" );
+        return '@' . ( $self->domain || '' );
     }
 }
 
@@ -698,7 +698,7 @@ sub identity_matches {
 
   my $key = $signature->key;
 
-  $signature->key(Mail::DKIM::PrivateKey->load(File => "private.key"));
+  $signature->key(Mail::DKIM::PrivateKey->load(File => 'private.key'));
 
 The private key is used for signing messages.
 It is not used for verifying messages.
@@ -730,10 +730,10 @@ sub method {
     my $self = shift;
 
     if (@_) {
-        $self->set_tag( "c", shift );
+        $self->set_tag( 'c', shift );
     }
 
-    return ( lc $self->get_tag("c") ) || "simple";
+    return ( lc $self->get_tag('c') ) || 'simple';
 }
 
 =head2 protocol() - get or set the query methods (q=) field
@@ -748,14 +748,14 @@ sub protocol {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "q", shift );
+      and $self->set_tag( 'q', shift );
 
-    my $q = $self->get_tag("q");
+    my $q = $self->get_tag('q');
     if ( defined $q ) {
         return $q;
     }
     else {
-        return "dns/txt";
+        return 'dns/txt';
     }
 }
 
@@ -763,10 +763,10 @@ sub protocol {
 
   my $result = $signature->result;
 
-  $signature->result("pass");
+  $signature->result('pass');
 
   # to set the result with details
-  $signature->result("invalid", "no public key");
+  $signature->result('invalid', 'no public key');
 
 =cut
 
@@ -788,10 +788,10 @@ documentation for L<Mail::DKIM::Verifier/result_detail()>.
 
 sub result_detail {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     if ( $self->{verify_result} && $self->{verify_details} ) {
-        return $self->{verify_result} . " (" . $self->{verify_details} . ")";
+        return $self->{verify_result} . ' (' . $self->{verify_details} . ')';
     }
     return $self->{verify_result};
 }
@@ -806,9 +806,9 @@ sub selector {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "s", shift );
+      and $self->set_tag( 's', shift );
 
-    return $self->get_tag("s");
+    return $self->get_tag('s');
 }
 
 =head2 prettify() - alters the signature to look "nicer" as an email header
@@ -828,9 +828,9 @@ sub prettify {
     $self->wrap(
         Start => length( $self->prefix() ),
         Tags  => {
-            b  => "b64",
-            bh => "b64",
-            h  => "list",
+            b  => 'b64',
+            bh => 'b64',
+            h  => 'list',
         },
     );
 }
@@ -849,10 +849,10 @@ sub prettify_safe {
     $self->wrap(
         Start => length( $self->prefix() ),
         Tags  => {
-            b => "b64",
+            b => 'b64',
         },
         PreserveNames => 1,
-        Default       => "preserve",    #preserves unknown tags
+        Default       => 'preserve',    #preserves unknown tags
     );
 }
 
@@ -868,9 +868,9 @@ sub timestamp {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "t", shift );
+      and $self->set_tag( 't', shift );
 
-    return $self->get_tag("t");
+    return $self->get_tag('t');
 }
 
 =head2 version() - get or set the DKIM specification version (v=) field
@@ -884,9 +884,9 @@ sub version {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "v", shift );
+      and $self->set_tag( 'v', shift );
 
-    return $self->get_tag("v");
+    return $self->get_tag('v');
 }
 
 =head1 SEE ALSO

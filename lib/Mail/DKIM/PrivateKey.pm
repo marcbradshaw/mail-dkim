@@ -17,7 +17,7 @@ Mail::DKIM::PrivateKey - a private key loaded in memory for DKIM signing
 =head1 SYNOPSIS
 
  my $key1 = Mail::DKIM::PrivateKey->load(
-               File => "/path/to/private.key");
+               File => '/path/to/private.key');
 
  my $key2 = Mail::DKIM::PrivateKey->load(
                Data => $base64);
@@ -30,7 +30,7 @@ Mail::DKIM::PrivateKey - a private key loaded in memory for DKIM signing
 =cut
 
 package Mail::DKIM::PrivateKey;
-use base "Mail::DKIM::Key";
+use base 'Mail::DKIM::Key';
 use Carp;
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;
 
@@ -39,7 +39,7 @@ use Carp;
 =head2 load() - loads a private key into memory
 
  my $key1 = Mail::DKIM::PrivateKey->load(
-               File => "/path/to/private.key");
+               File => '/path/to/private.key');
 
 Loads the Base64-encoded key from the specified file.
 
@@ -61,14 +61,14 @@ sub load {
 
     my $self = bless {}, $class;
 
-    $self->{'TYPE'} = ( $prms{'Type'} or "rsa" );
+    $self->{'TYPE'} = ( $prms{'Type'} or 'rsa' );
 
     if ( $prms{'Data'} ) {
         $self->{'DATA'} = $prms{'Data'};
     }
     elsif ( defined $prms{'File'} ) {
         my @data;
-        open my $file, "<", $prms{'File'}
+        open my $file, '<', $prms{'File'}
           or die "Error: cannot read $prms{File}: $!\n";
         while ( my $line = <$file> ) {
             chomp $line;
@@ -82,7 +82,7 @@ sub load {
         $self->{'CORK'} = $prms{'Cork'};
     }
     else {
-        croak "missing required argument";
+        croak 'missing required argument';
     }
 
     return $self;
@@ -148,14 +148,14 @@ sub sign {
 sub sign_sha1_digest {
     my $self = shift;
     my ($digest) = @_;
-    return $self->sign_digest( "SHA-1", $digest );
+    return $self->sign_digest( 'SHA-1', $digest );
 }
 
 =head2 sign_digest()
 
 Cryptographically sign the given message digest.
 
-  $key->sign_digest("SHA-1", sha1("my message text"));
+  $key->sign_digest('SHA-1', sha1('my message text'));
 
 The first parameter is the name of the digest: one of "SHA-1", "SHA-256".
 

@@ -46,14 +46,14 @@ Mail::DKIM::Verifier - verifies a DKIM-signed message
   # there might be multiple signatures, what is the result per signature?
   foreach my $signature ($dkim->signatures)
   {
-      print "signature identity: " . $signature->identity . "\n";
-      print "verify result: " . $signature->result_detail . "\n";
+      print 'signature identity: ' . $signature->identity . "\n";
+      print 'verify result: ' . $signature->result_detail . "\n";
   }
 
   # the alleged author of the email may specify how to handle email
   foreach my $policy ($dkim->policies)
   {
-      die "fraudulent message" if ($policy->apply($dkim) eq "reject");
+      die 'fraudulent message' if ($policy->apply($dkim) eq 'reject');
   }
 
 =cut
@@ -109,7 +109,7 @@ is written to the referenced string or file handle.
 =cut
 
 package Mail::DKIM::Verifier;
-use base "Mail::DKIM::Common";
+use base 'Mail::DKIM::Common';
 use Carp;
 our $VERSION                   = 0.44;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
@@ -150,7 +150,7 @@ sub handle_header {
 
     $self->SUPER::handle_header( $field_name, $contents );
 
-    if ( lc($field_name) eq "dkim-signature" ) {
+    if ( lc($field_name) eq 'dkim-signature' ) {
         eval {
             my $signature = Mail::DKIM::Signature->parse($line);
             $self->add_signature($signature);
@@ -167,7 +167,7 @@ sub handle_header {
         }
     }
 
-    if ( lc($field_name) eq "domainkey-signature" ) {
+    if ( lc($field_name) eq 'domainkey-signature' ) {
         eval {
             my $signature = Mail::DKIM::DkSignature->parse($line);
             $self->add_signature($signature);
@@ -187,7 +187,7 @@ sub handle_header {
 
 sub add_signature {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($signature) = @_;
 
     # ignore signature headers once we've seen 50 or so
@@ -197,7 +197,7 @@ sub add_signature {
     push @{ $self->{signatures} }, $signature;
 
     unless ( $self->check_signature($signature) ) {
-        $signature->result( "invalid", $self->{signature_reject_reason} );
+        $signature->result( 'invalid', $self->{signature_reject_reason} );
         return;
     }
 
@@ -229,7 +229,7 @@ sub add_signature {
 
 sub check_signature {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($signature) = @_;
 
     unless ( $signature->check_version ) {
@@ -237,10 +237,10 @@ sub check_signature {
         # unsupported version
         if ( defined $signature->version ) {
             $self->{signature_reject_reason} =
-              "unsupported version " . $signature->version;
+              'unsupported version ' . $signature->version;
         }
         else {
-            $self->{signature_reject_reason} = "missing v tag";
+            $self->{signature_reject_reason} = 'missing v tag';
         }
         return 0;
     }
@@ -249,9 +249,9 @@ sub check_signature {
         && $signature->get_algorithm_class( $signature->algorithm ) )
     {
         # unsupported algorithm
-        $self->{signature_reject_reason} = "unsupported algorithm";
+        $self->{signature_reject_reason} = 'unsupported algorithm';
         if ( defined $signature->algorithm ) {
-            $self->{signature_reject_reason} .= " " . $signature->algorithm;
+            $self->{signature_reject_reason} .= ' ' . $signature->algorithm;
         }
         return 0;
     }
@@ -259,10 +259,10 @@ sub check_signature {
     unless ( $signature->check_canonicalization ) {
 
         # unsupported canonicalization method
-        $self->{signature_reject_reason} = "unsupported canonicalization";
+        $self->{signature_reject_reason} = 'unsupported canonicalization';
         if ( defined $signature->canonicalization ) {
             $self->{signature_reject_reason} .=
-              " " . $signature->canonicalization;
+              ' ' . $signature->canonicalization;
         }
         return 0;
     }
@@ -272,36 +272,36 @@ sub check_signature {
         # unsupported query protocol
         $self->{signature_reject_reason} =
           !defined( $signature->protocol )
-          ? "missing q tag"
-          : "unsupported query protocol, q=" . $signature->protocol;
+          ? 'missing q tag'
+          : 'unsupported query protocol, q=' . $signature->protocol;
         return 0;
     }
 
     unless ( $signature->check_expiration ) {
 
         # signature has expired
-        $self->{signature_reject_reason} = "signature is expired";
+        $self->{signature_reject_reason} = 'signature is expired';
         return 0;
     }
 
     unless ( defined $signature->domain ) {
 
         # no domain specified
-        $self->{signature_reject_reason} = "missing d tag";
+        $self->{signature_reject_reason} = 'missing d tag';
         return 0;
     }
 
     if ( $signature->domain eq '' ) {
 
         # blank domain
-        $self->{signature_reject_reason} = "invalid domain in d tag";
+        $self->{signature_reject_reason} = 'invalid domain in d tag';
         return 0;
     }
 
     unless ( defined $signature->selector ) {
 
         # no selector specified
-        $self->{signature_reject_reason} = "missing s tag";
+        $self->{signature_reject_reason} = 'missing s tag';
         return 0;
     }
 
@@ -310,7 +310,7 @@ sub check_signature {
 
 sub check_public_key {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 2 );
+    croak 'wrong number of arguments' unless ( @_ == 2 );
     my ( $signature, $public_key ) = @_;
 
     my $result = 0;
@@ -327,7 +327,7 @@ sub check_public_key {
 
         # HACK- DomainKeys signatures are allowed to have an empty g=
         # tag in the public key
-        my $empty_g_means_wildcard = $signature->isa("Mail::DKIM::DkSignature");
+        my $empty_g_means_wildcard = $signature->isa('Mail::DKIM::DkSignature');
 
         # check public key's granularity
         $result &&=
@@ -359,7 +359,7 @@ sub check_signature_identity {
 }
 
 sub match_subdomain {
-    croak "wrong number of arguments" unless ( @_ == 2 );
+    croak 'wrong number of arguments' unless ( @_ == 2 );
     my ( $subdomain, $superdomain ) = @_;
 
     my $tmp = substr( ".$subdomain", -1 - length($superdomain) );
@@ -379,7 +379,7 @@ sub finish_header {
     if ( @{ $self->{signatures} } == 0
         && !defined( $self->{signature_reject_reason} ) )
     {
-        $self->{result} = "none";
+        $self->{result} = 'none';
         return;
     }
 
@@ -390,13 +390,13 @@ sub finish_header {
     # stop processing signatures that are already known to be invalid
     @{ $self->{algorithms} } = grep {
         my $sig = $_->signature;
-        !( $sig->result && $sig->result eq "invalid" );
+        !( $sig->result && $sig->result eq 'invalid' );
     } @{ $self->{algorithms} };
 
     if (   @{ $self->{algorithms} } == 0
         && @{ $self->{signatures} } > 0 )
     {
-        $self->{result} = $self->{signatures}->[0]->result || "invalid";
+        $self->{result} = $self->{signatures}->[0]->result || 'invalid';
         $self->{details} = $self->{signatures}->[0]->{verify_details}
           || $self->{signature_reject_reason};
         return;
@@ -410,8 +410,8 @@ sub _check_and_verify_signature {
     # check signature
     my $signature = $algorithm->signature;
     unless ( check_signature_identity($signature) ) {
-        $self->{signature_reject_reason} = "bad identity";
-        return ( "invalid", $self->{signature_reject_reason} );
+        $self->{signature_reject_reason} = 'bad identity';
+        return ( 'invalid', $self->{signature_reject_reason} );
     }
 
     # get public key
@@ -421,11 +421,11 @@ sub _check_and_verify_signature {
         my $E = $@;
         chomp $E;
         $self->{signature_reject_reason} = "public key: $E";
-        return ( "invalid", $self->{signature_reject_reason} );
+        return ( 'invalid', $self->{signature_reject_reason} );
     }
 
     unless ( $self->check_public_key( $signature, $pkey ) ) {
-        return ( "invalid", $self->{signature_reject_reason} );
+        return ( 'invalid', $self->{signature_reject_reason} );
     }
 
     # verify signature
@@ -433,7 +433,7 @@ sub _check_and_verify_signature {
     my $details;
     local $@ = undef;
     eval {
-        $result = $algorithm->verify() ? "pass" : "fail";
+        $result = $algorithm->verify() ? 'pass' : 'fail';
         $details = $algorithm->{verification_details} || $@;
     };
     if ($@) {
@@ -446,7 +446,7 @@ sub _check_and_verify_signature {
         elsif ( $E =~ /^(panic:.*?) at / ) {
             $E = "OpenSSL $1";
         }
-        $result  = "fail";
+        $result  = 'fail';
         $details = $E;
     }
     return ( $result, $details );
@@ -470,7 +470,7 @@ sub finish_body {
 
         # collate results ... ignore failed signatures if we already got
         # one to pass
-        if ( !$self->{result} || $result eq "pass" ) {
+        if ( !$self->{result} || $result eq 'pass' ) {
             $self->{signature} = $algorithm->signature;
             $self->{result}    = $result;
             $self->{details}   = $details;
@@ -485,7 +485,7 @@ sub finish_body {
 Feeds part of the message to the verifier.
 
   $dkim->PRINT("a line of the message\015\012");
-  $dkim->PRINT("more of");
+  $dkim->PRINT('more of');
   $dkim->PRINT(" the message\015\012bye\015\012");
 
 Feeds content of the message being verified into the verifier.
@@ -542,7 +542,7 @@ sub fetch_author_domain_policies {
     # fetch the policies
     return map {
         Mail::DKIM::AuthorDomainPolicy->fetch(
-            Protocol => "dns",
+            Protocol => 'dns',
             Author   => $_,
           )
     } @authors;
@@ -574,7 +574,7 @@ sub fetch_author_policy {
 
     # fetch the policy
     return Mail::DKIM::DkimPolicy->fetch(
-        Protocol => "dns",
+        Protocol => 'dns',
         Author   => $author,
     );
 }
@@ -613,7 +613,7 @@ sub fetch_sender_policy {
 
     # fetch the policy
     return Mail::DKIM::DkPolicy->fetch(
-        Protocol => "dns",
+        Protocol => 'dns',
         Author   => $author,
         Sender   => $sender,
     );
@@ -824,7 +824,7 @@ the verification results of each signature.
 
 sub signatures {
     my $self = shift;
-    croak "unexpected argument" if @_;
+    croak 'unexpected argument' if @_;
 
     return @{ $self->{signatures} };
 }

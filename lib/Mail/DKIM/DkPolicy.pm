@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::DkPolicy;
-use base "Mail::DKIM::Policy";
+use base 'Mail::DKIM::Policy';
 use Mail::DKIM::DNS;
 
 =head1 NAME
@@ -30,7 +30,7 @@ DNS that describes how they sign messages.
 =head2 fetch() - fetch a sender signing policy from DNS
 
   my $policy = Mail::DKIM::DkPolicy->fetch(
-                   Protocol => "dns",
+                   Protocol => 'dns',
                    Sender => 'joe@example.org',
                );
 
@@ -96,11 +96,11 @@ sub get_lookup_name {
     }
 
     # IETF seems poised to create policy records this way
-    #my $host = "_policy._domainkey." . $prms{Domain};
+    #my $host = '_policy._domainkey.' . $prms{Domain};
 
     # but Yahoo! policy records are still much more common
     # see historic RFC4870, section 3.6
-    return "_domainkey." . $prms->{Domain};
+    return '_domainkey.' . $prms->{Domain};
 }
 
 =head2 new() - construct a default policy object
@@ -111,13 +111,13 @@ sub get_lookup_name {
 
 sub new {
     my $class = shift;
-    return $class->parse( String => "o=~" );
+    return $class->parse( String => 'o=~' );
 }
 
 =head2 parse() - gets a policy object by parsing a string
 
   my $policy = Mail::DKIM::DkPolicy->parse(
-                   String => "o=~; t=y"
+                   String => 'o=~; t=y'
                );
 
 =cut
@@ -167,7 +167,7 @@ sub apply {
 
     my $first_party;
     foreach my $signature ( $dkim->signatures ) {
-        next if $signature->result ne "pass";
+        next if $signature->result ne 'pass';
 
         my $oa = $dkim->message_sender->address;
         if ( $signature->identity_matches($oa) ) {
@@ -178,9 +178,9 @@ sub apply {
         }
     }
 
-    return "accept" if $first_party;
-    return "reject" if ( $self->signall && !$self->testing );
-    return "neutral";
+    return 'accept' if $first_party;
+    return 'reject' if ( $self->signall && !$self->testing );
+    return 'neutral';
 }
 
 =head2 flags() - get or set the flags (t=) tag
@@ -225,7 +225,7 @@ was returned instead, the location will be C<undef>.
 =cut
 
 sub name {
-    return "sender";
+    return 'sender';
 }
 
 =head2 note() - get or set the human readable notes (n=) tag
@@ -273,17 +273,17 @@ sub policy {
         return $self->{tags}->{o};
     }
     else {
-        return "~";    # the default
+        return '~';    # the default
     }
 }
 
-=head2 signall() - true if policy is "-"
+=head2 signall() - true if policy is /-"
 
 =cut
 
 sub signall {
     my $self = shift;
-    return ( $self->policy && $self->policy eq "-" );
+    return ( $self->policy && $self->policy eq '-' );
 }
 
 sub signsome {
@@ -292,7 +292,7 @@ sub signsome {
     $self->policy
       or return 1;
 
-    $self->policy eq "~"
+    $self->policy eq '~'
       and return 1;
 
     return;

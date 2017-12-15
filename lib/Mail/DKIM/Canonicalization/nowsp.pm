@@ -10,12 +10,12 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::nowsp;
-use base "Mail::DKIM::Canonicalization::DkimCommon";
+use base 'Mail::DKIM::Canonicalization::DkimCommon';
 use Carp;
 
 sub canonicalize_header {
     my $self = shift;
-    croak "wrong number of parameters" unless ( @_ == 1 );
+    croak 'wrong number of parameters' unless ( @_ == 1 );
     my ($line) = @_;
 
     # remove all whitespace

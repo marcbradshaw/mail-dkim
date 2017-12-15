@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::dk_nofws;
-use base "Mail::DKIM::Canonicalization::dk_simple";
+use base 'Mail::DKIM::Canonicalization::dk_simple';
 use Carp;
 
 sub canonicalize_header {

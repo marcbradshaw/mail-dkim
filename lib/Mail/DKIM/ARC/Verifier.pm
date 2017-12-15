@@ -112,7 +112,7 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 =cut
 
 package Mail::DKIM::ARC::Verifier;
-use base "Mail::DKIM::Common";
+use base 'Mail::DKIM::Common';
 use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;
 use Mail::Address;
@@ -171,7 +171,7 @@ sub handle_header {
         }
     }
 
-    if ( lc($field_name) eq "arc-seal" ) {
+    if ( lc($field_name) eq 'arc-seal' ) {
         eval {
             my $signature = Mail::DKIM::ARC::Seal->parse($line);
             $self->add_signature($signature);
@@ -242,20 +242,20 @@ sub add_signature {
     # duplicate tags
     if ( $rawtaglen != $#tagkeys ) {
         $self->{result}  = 'fail';                         # bogus
-        $self->{details} = "Duplicate tag in signature";
+        $self->{details} = 'Duplicate tag in signature';
         return;
     }
 
     # invalid tag name
     if ( grep { !m{[a-z][a-z0-9_]*}i } @tagkeys ) {
         $self->{result}  = 'fail';                         # bogus
-        $self->{details} = "Invalid tag in signature";
+        $self->{details} = 'Invalid tag in signature';
         return;
     }
 
     if ( $signature->isa('Mail::DKIM::ARC::Seal') ) {
         my ($instance);
-        $instance = $signature->instance() || "";
+        $instance = $signature->instance() || '';
 
         if ( $instance !~ m{^\d+$} or $instance < 1 or $instance > 1024 ) {
             $self->{result}  = 'fail';                                   # bogus
@@ -267,10 +267,10 @@ sub add_signature {
         if ( $self->{seals}[$instance] ) {
             $self->{result} = 'fail';                                    # dup
             if ( $signature eq $self->{seals}[$instance] ) {
-                $self->{details} = sprintf "Duplicate ARC-Seal %d", $instance;
+                $self->{details} = sprintf 'Duplicate ARC-Seal %d', $instance;
             }
             else {
-                $self->{details} = sprintf "Redundant ARC-Seal %d", $instance;
+                $self->{details} = sprintf 'Redundant ARC-Seal %d', $instance;
             }
             return;
         }
@@ -292,11 +292,11 @@ sub add_signature {
             if ( $signature->as_string() eq
                 $self->{messages}[$instance]->as_string() )
             {
-                $self->{details} = sprintf "Duplicate ARC-Message-Signature %d",
+                $self->{details} = sprintf 'Duplicate ARC-Message-Signature %d',
                   $instance;
             }
             else {
-                $self->{details} = sprintf "Redundant ARC-Message-Signature %d",
+                $self->{details} = sprintf 'Redundant ARC-Message-Signature %d',
                   $instance;
             }
             return;
@@ -407,7 +407,7 @@ sub check_public_key {
 
 # HACK- DomainKeys signatures are allowed to have an empty g=
 # tag in the public key
-#        my $empty_g_means_wildcard = $signature->isa("Mail::DKIM::DkSignature");
+#        my $empty_g_means_wildcard = $signature->isa('Mail::DKIM::DkSignature');
 
         # check public key's granularity
         $result &&= $public_key->check_granularity( $signature->instance, 0 );
@@ -706,7 +706,7 @@ sub result_detail {
 Feeds part of the message to the verifier.
 
   $arc->PRINT("a line of the message\015\012");
-  $arc->PRINT("more of");
+  $arc->PRINT('more of');
   $arc->PRINT(" the message\015\012bye\015\012");
 
 Feeds content of the message being verified into the verifier.

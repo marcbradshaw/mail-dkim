@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::DkimCommon;
-use base "Mail::DKIM::Canonicalization::Base";
+use base 'Mail::DKIM::Canonicalization::Base';
 use Carp;
 
 sub init {
@@ -23,7 +23,7 @@ sub init {
 
     # these canonicalization methods require signature to use
     $self->{Signature}
-      or croak "no signature specified";
+      or croak 'no signature specified';
 }
 
 # similar to code in DkCommon.pm

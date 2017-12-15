@@ -24,12 +24,12 @@ Mail::DKIM::Signer - generates a DKIM signature for a message
 
   # create a signer object
   my $dkim = Mail::DKIM::Signer->new(
-                  Algorithm => "rsa-sha1",
-                  Method => "relaxed",
-                  Domain => "example.org",
-                  Selector => "selector1",
-                  KeyFile => "private.key",
-                  Headers => "x-header:x-header2",
+                  Algorithm => 'rsa-sha1',
+                  Method => 'relaxed',
+                  Domain => 'example.org',
+                  Selector => 'selector1',
+                  KeyFile => 'private.key',
+                  Headers => 'x-header:x-header2',
              );
 
   # read an email from a file handle
@@ -79,12 +79,12 @@ Construct an object-oriented signer.
 
   # create a signer using the default policy
   my $dkim = Mail::DKIM::Signer->new(
-                  Algorithm => "rsa-sha1",
-                  Method => "relaxed",
-                  Domain => "example.org",
-                  Selector => "selector1",
-                  KeyFile => "private.key",
-                  Headers => "x-header:x-header2",
+                  Algorithm => 'rsa-sha1',
+                  Method => 'relaxed',
+                  Domain => 'example.org',
+                  Selector => 'selector1',
+                  KeyFile => 'private.key',
+                  Headers => 'x-header:x-header2',
              );
 
   # create a signer using a custom policy
@@ -143,7 +143,7 @@ The list of headers signed by default is as follows
 =cut
 
 package Mail::DKIM::Signer;
-use base "Mail::DKIM::Common";
+use base 'Mail::DKIM::Common';
 use Carp;
 our $VERSION = 0.44;
 
@@ -195,25 +195,25 @@ sub init {
           Mail::DKIM::PrivateKey->load( File => $self->{KeyFile} );
     }
 
-    unless ( $self->{"Algorithm"} ) {
+    unless ( $self->{'Algorithm'} ) {
 
         # use default algorithm
-        $self->{"Algorithm"} = "rsa-sha1";
+        $self->{'Algorithm'} = 'rsa-sha1';
     }
-    unless ( $self->{"Method"} ) {
+    unless ( $self->{'Method'} ) {
 
         # use default canonicalization method
-        $self->{"Method"} = "relaxed";
+        $self->{'Method'} = 'relaxed';
     }
-    unless ( $self->{"Domain"} ) {
+    unless ( $self->{'Domain'} ) {
 
         # use default domain
-        $self->{"Domain"} = "example.org";
+        $self->{'Domain'} = 'example.org';
     }
-    unless ( $self->{"Selector"} ) {
+    unless ( $self->{'Selector'} ) {
 
         # use default selector
-        $self->{"Selector"} = "unknown";
+        $self->{'Selector'} = 'unknown';
     }
 }
 
@@ -223,21 +223,21 @@ sub finish_header {
     $self->{algorithms} = [];
 
     my $policy = $self->{Policy};
-    if ( UNIVERSAL::isa( $policy, "CODE" ) ) {
+    if ( UNIVERSAL::isa( $policy, 'CODE' ) ) {
 
         # policy is a subroutine ref
         my $default_sig = $policy->($self);
         unless ( @{ $self->{algorithms} } || $default_sig ) {
-            $self->{"result"} = "skipped";
+            $self->{'result'} = 'skipped';
             return;
         }
     }
-    elsif ( $policy && $policy->can("apply") ) {
+    elsif ( $policy && $policy->can('apply') ) {
 
         # policy is a Perl object or class
         my $default_sig = $policy->apply($self);
         unless ( @{ $self->{algorithms} } || $default_sig ) {
-            $self->{"result"} = "skipped";
+            $self->{'result'} = 'skipped';
             return;
         }
     }
@@ -248,34 +248,34 @@ sub finish_header {
         # using the current signature properties
 
         # check properties
-        unless ( $self->{"Algorithm"} ) {
-            die "invalid algorithm property";
+        unless ( $self->{'Algorithm'} ) {
+            die 'invalid algorithm property';
         }
-        unless ( $self->{"Method"} ) {
-            die "invalid method property";
+        unless ( $self->{'Method'} ) {
+            die 'invalid method property';
         }
-        unless ( $self->{"Domain"} ) {
-            die "invalid header property";
+        unless ( $self->{'Domain'} ) {
+            die 'invalid header property';
         }
-        unless ( $self->{"Selector"} ) {
-            die "invalid selector property";
+        unless ( $self->{'Selector'} ) {
+            die 'invalid selector property';
         }
 
         $self->add_signature(
             Mail::DKIM::Signature->new(
-                Algorithm => $self->{"Algorithm"},
-                Method    => $self->{"Method"},
+                Algorithm => $self->{'Algorithm'},
+                Method    => $self->{'Method'},
                 Headers   => $self->headers,
-                Domain    => $self->{"Domain"},
-                Selector  => $self->{"Selector"},
-                Key       => $self->{"Key"},
-                KeyFile   => $self->{"KeyFile"},
+                Domain    => $self->{'Domain'},
+                Selector  => $self->{'Selector'},
+                Key       => $self->{'Key'},
+                KeyFile   => $self->{'KeyFile'},
                 (
-                    $self->{"Identity"} ? ( Identity => $self->{"Identity"} )
+                    $self->{'Identity'} ? ( Identity => $self->{'Identity'} )
                     : ()
                 ),
                 (
-                    $self->{"Timestamp"} ? ( Timestamp => $self->{"Timestamp"} )
+                    $self->{'Timestamp'} ? ( Timestamp => $self->{'Timestamp'} )
                     : ()
                 ),
             )
@@ -321,7 +321,7 @@ sub finish_body {
         $signature->prettify_safe();
 
         $self->{signature} = $signature;
-        $self->{result}    = "signed";
+        $self->{result}    = 'signed';
     }
 }
 
@@ -401,7 +401,7 @@ sub add_signature {
     # create a canonicalization filter and algorithm
     my $algorithm_class =
       $signature->get_algorithm_class( $signature->algorithm )
-      or die "unsupported algorithm " . ( $signature->algorithm || "" ) . "\n";
+      or die 'unsupported algorithm ' . ( $signature->algorithm || '' ) . "\n";
     my $algorithm = $algorithm_class->new(
         Signature              => $signature,
         Debug_Canonicalization => $self->{Debug_Canonicalization},
@@ -416,7 +416,7 @@ Get or set the selected algorithm.
 
   $alg = $dkim->algorithm;
 
-  $dkim->algorithm("rsa-sha1");
+  $dkim->algorithm('rsa-sha1');
 
 =cut
 
@@ -434,7 +434,7 @@ Get or set the selected domain.
 
   $alg = $dkim->domain;
 
-  $dkim->domain("example.org");
+  $dkim->domain('example.org');
 
 =cut
 
@@ -554,7 +554,7 @@ sub process_headers_hash {
             push @headers, $header;
         }
     }
-    return join( ":", @headers );
+    return join( ':', @headers );
 }
 
 sub extended_headers {
@@ -565,7 +565,7 @@ sub extended_headers {
 
 sub headers {
     my $self = shift;
-    croak "unexpected argument" if @_;
+    croak 'unexpected argument' if @_;
 
     if ( exists $self->{'ExtendedHeaders'} ) {
         return $self->process_headers_hash();
@@ -585,7 +585,7 @@ sub headers {
         my $a = $_;
         scalar grep { lc($a) eq lc($_) } @wanted_headers
       } @found_headers;
-    return join( ":", @headers );
+    return join( ':', @headers );
 }
 
 # return nonzero if this is header we should sign
@@ -603,7 +603,7 @@ Get or set the private key object.
 
   my $key = $dkim->key;
 
-  $dkim->key(Mail::DKIM::PrivateKey->load(File => "private.key"));
+  $dkim->key(Mail::DKIM::PrivateKey->load(File => 'private.key'));
 
 The key object can be any object that implements the
 L<sign_digest() method|Mail::DKIM::PrivateKey/"sign_digest()">.
@@ -630,7 +630,7 @@ Get or set the filename containing the private key.
 
   my $filename = $dkim->key_file;
 
-  $dkim->key_file("private.key");
+  $dkim->key_file('private.key');
 
 If you use this method to specify a private key file,
 do not use L</"key()">.
@@ -652,7 +652,7 @@ Get or set the selected canonicalization method.
 
   $alg = $dkim->method;
 
-  $dkim->method("relaxed");
+  $dkim->method('relaxed');
 
 =cut
 
@@ -712,7 +712,7 @@ Get or set the current key selector.
 
   $alg = $dkim->selector;
 
-  $dkim->selector("alpha");
+  $dkim->selector('alpha');
 
 =cut
 
@@ -750,7 +750,7 @@ Returns all generated signatures, as a list.
 
 sub signatures {
     my $self = shift;
-    croak "no arguments allowed" if @_;
+    croak 'no arguments allowed' if @_;
     return map { $_->signature } @{ $self->{algorithms} };
 }
 
@@ -768,10 +768,10 @@ created. E.g.,
       my $dkim = shift;
 
       # specify signature parameters
-      $dkim->algorithm("rsa-sha1");
-      $dkim->method("relaxed");
-      $dkim->domain("example.org");
-      $dkim->selector("mx1");
+      $dkim->algorithm('rsa-sha1');
+      $dkim->method('relaxed');
+      $dkim->domain('example.org');
+      $dkim->selector('mx1');
 
       # return true value to create the signature
       return 1;
@@ -787,19 +787,19 @@ or to create the older DomainKey-style signatures.
       my $dkim = shift;
       $dkim->add_signature(
               new Mail::DKIM::Signature(
-                      Algorithm => "rsa-sha1",
-                      Method => "relaxed",
+                      Algorithm => 'rsa-sha1',
+                      Method => 'relaxed',
                       Headers => $dkim->headers,
-                      Domain => "example.org",
-                      Selector => "mx1",
+                      Domain => 'example.org',
+                      Selector => 'mx1',
               ));
       $dkim->add_signature(
               new Mail::DKIM::DkSignature(
-                      Algorithm => "rsa-sha1",
-                      Method => "nofws",
+                      Algorithm => 'rsa-sha1',
+                      Method => 'nofws',
                       Headers => $dkim->headers,
-                      Domain => "example.org",
-                      Selector => "mx1",
+                      Domain => 'example.org',
+                      Selector => 'mx1',
               ));
       return;
   };

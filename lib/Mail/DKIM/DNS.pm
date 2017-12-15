@@ -179,12 +179,12 @@ sub query {
             }
         }
     }
-    die "DNS error: " . $rslv->errorstring . "\n";
+    die 'DNS error: ' . $rslv->errorstring . "\n";
 }
 
 # query_async() - perform a DNS query asynchronously
 #
-#   my $waiter = query_async("example.org", "TXT",
+#   my $waiter = query_async('example.org', 'TXT',
 #                        Callbacks => {
 #                                Success => \&on_success,
 #                                Error => \&on_error,

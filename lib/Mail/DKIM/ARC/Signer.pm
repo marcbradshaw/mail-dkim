@@ -155,7 +155,7 @@ The list of headers signed by default is as follows
 =cut
 
 package Mail::DKIM::ARC::Signer;
-use base "Mail::DKIM::Common";
+use base 'Mail::DKIM::Common';
 use Carp;
 our $VERSION = 0.44;
 
@@ -264,7 +264,7 @@ sub finish_header {
 
             # get chain value from A-R header
             $self->{Chain} = $1
-              if $self->{Chain} eq "ar" and $arval =~ m{\barc=(none|pass|fail)};
+              if $self->{Chain} eq 'ar' and $arval =~ m{\barc=(none|pass|fail)};
 
         }
         else {
@@ -712,7 +712,7 @@ sub process_headers_hash {
             push @headers, $header;
         }
     }
-    return join( ":", @headers );
+    return join( ':', @headers );
 }
 
 sub extended_headers {
@@ -746,7 +746,7 @@ sub headers {
         my $a = $_;
         scalar grep { lc($a) eq lc($_) } @wanted_headers
       } @found_headers;
-    return join( ":", @headers );
+    return join( ':', @headers );
 }
 
 # return nonzero if this is header we should sign
@@ -764,7 +764,7 @@ Get or set the private key object.
 
   my $key = $signer->key;
 
-  $signer->key(Mail::DKIM::PrivateKey->load(File => "private.key"));
+  $signer->key(Mail::DKIM::PrivateKey->load(File => 'private.key'));
 
 The key object can be any object that implements the
 L<sign_digest() method|Mail::DKIM::PrivateKey/"sign_digest()">.
@@ -879,7 +879,7 @@ Returns all generated signatures, as a list.
 
 sub signatures {
     my $self = shift;
-    croak "no arguments allowed" if @_;
+    croak 'no arguments allowed' if @_;
     return map { $_->signature } @{ $self->{algorithms} };
 }
 

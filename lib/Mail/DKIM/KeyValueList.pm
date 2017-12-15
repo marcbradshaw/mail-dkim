@@ -23,7 +23,7 @@ sub new {
 
 sub parse {
     my $self_or_class = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($string) = @_;
 
     my $self = ref($self_or_class) ? $self_or_class : $self_or_class->new;
@@ -37,7 +37,7 @@ sub parse {
         # strip preceding and trailing whitespace
         $raw_tag =~ s/^\s+|\s*$//g;
 
-        next if ( $raw_tag eq "" );
+        next if ( $raw_tag eq '' );
 
         my ( $tagname, $value ) = split( /\s*=\s*/, $raw_tag, 2 );
         unless ( defined $value ) {
@@ -74,15 +74,15 @@ sub set_tag {
     my ( $tagname, $value ) = @_;
 
     if ( $tagname =~ /[;=\015\012\t ]/ ) {
-        croak "invalid tag name";
+        croak 'invalid tag name';
     }
 
     if ( defined $value ) {
         if ( $value =~ /;/ ) {
-            croak "invalid tag value";
+            croak 'invalid tag value';
         }
         if ( $value =~ /\015\012[^\t ]/ ) {
-            croak "invalid tag value";
+            croak 'invalid tag value';
         }
 
         if ( $self->{tags_by_name}->{$tagname} ) {
@@ -112,9 +112,9 @@ sub set_tag {
 sub as_string {
     my $self = shift;
     if ($Mail::DKIM::SORTTAGS) {
-        return join( ";", sort map { $_->{raw} } @{ $self->{tags} } );
+        return join( ';', sort map { $_->{raw} } @{ $self->{tags} } );
     }
-    return join( ";", map { $_->{raw} } @{ $self->{tags} } );
+    return join( ';', map { $_->{raw} } @{ $self->{tags} } );
 }
 
 # Start - length of the signature's prefix
@@ -127,10 +127,10 @@ sub wrap {
     my $self = shift;
     my %args = @_;
 
-    my $TEXTWRAP_CLASS = "Mail::DKIM::TextWrap";
-    return unless ( UNIVERSAL::can( $TEXTWRAP_CLASS, "new" ) );
+    my $TEXTWRAP_CLASS = 'Mail::DKIM::TextWrap';
+    return unless ( UNIVERSAL::can( $TEXTWRAP_CLASS, 'new' ) );
 
-    my $result = "";
+    my $result = '';
     my $wrap   = $TEXTWRAP_CLASS->new(
         Output    => \$result,
         Separator => $args{Insert} || "\015\012\t",
@@ -140,11 +140,11 @@ sub wrap {
     my $did_first;
     foreach my $tag ( @{ $self->{tags} } ) {
         my $tagname = $tag->{name};
-        my $tagtype = $args{Tags}->{$tagname} || $args{Default} || "";
+        my $tagtype = $args{Tags}->{$tagname} || $args{Default} || '';
 
         $wrap->{Break}       = undef;
         $wrap->{BreakBefore} = undef;
-        $did_first ? $wrap->add(";") : ( $did_first = 1 );
+        $did_first ? $wrap->add(';') : ( $did_first = 1 );
 
         my ( $raw_name, $raw_value ) = split( /=/, $tag->{raw}, 2 );
         unless ( $args{PreserveNames} ) {
@@ -152,14 +152,14 @@ sub wrap {
             $raw_name =~ s/^\s*/ /;
             $raw_name =~ s/\s+$//;
         }
-        $wrap->add( $raw_name . "=" );
+        $wrap->add( $raw_name . '=' );
 
-        if ( $tagtype eq "b64" ) {
+        if ( $tagtype eq 'b64' ) {
             $raw_value =~ s/\s+//gs;    #removes all whitespace
             $wrap->flush;
             $wrap->{Break} = qr/./;
         }
-        elsif ( $tagtype eq "list" ) {
+        elsif ( $tagtype eq 'list' ) {
             $raw_value =~ s/\s+/ /gs;    #reduces any whitespace to single space
             $raw_value =~ s/^\s|\s$//g;  #trims preceding/trailing spaces
             $raw_value =~ s/\s*:\s*/:/g;
@@ -167,7 +167,7 @@ sub wrap {
             $wrap->{Break}       = qr/[\s]/;
             $wrap->{BreakBefore} = qr/[:]/;
         }
-        elsif ( $tagtype eq "" ) {
+        elsif ( $tagtype eq '' ) {
             $raw_value =~ s/\s+/ /gs;    #reduces any whitespace to single space
             $raw_value =~ s/^\s|\s$//g;  #trims preceding/trailing spaces
             $wrap->flush;

@@ -13,7 +13,7 @@ use warnings;
 use Mail::Address;
 
 package Mail::DKIM::Common;
-use base "Mail::DKIM::MessageParser";
+use base 'Mail::DKIM::MessageParser';
 use Carp;
 our $VERSION = 0.44;
 
@@ -89,19 +89,19 @@ sub message_attributes {
     }
 
     if ( my $sig = $self->signature ) {
-        push @attributes, "signer=<" . $sig->identity . ">";
+        push @attributes, 'signer=<' . $sig->identity . '>';
     }
 
     if ( $self->{headers_by_name}->{sender} ) {
         my @list = Mail::Address->parse( $self->{headers_by_name}->{sender} );
         if ( $list[0] ) {
-            push @attributes, "sender=<" . $list[0]->address . ">";
+            push @attributes, 'sender=<' . $list[0]->address . '>';
         }
     }
     elsif ( $self->{headers_by_name}->{from} ) {
         my @list = Mail::Address->parse( $self->{headers_by_name}->{from} );
         if ( $list[0] ) {
-            push @attributes, "from=<" . $list[0]->address . ">";
+            push @attributes, 'from=<' . $list[0]->address . '>';
         }
     }
 
@@ -110,9 +110,9 @@ sub message_attributes {
 
 sub message_id {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
-    if ( my $message_id = $self->{headers_by_name}->{"message-id"} ) {
+    if ( my $message_id = $self->{headers_by_name}->{'message-id'} ) {
         if ( $message_id =~ /^\s*<(.*)>\s*$/ ) {
             return $1;
         }
@@ -122,7 +122,7 @@ sub message_id {
 
 sub message_originator {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     if ( $self->{headers_by_name}->{from} ) {
         my @list = Mail::Address->parse( $self->{headers_by_name}->{from} );
@@ -133,7 +133,7 @@ sub message_originator {
 
 sub message_sender {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     if ( $self->{headers_by_name}->{sender} ) {
         my @list = Mail::Address->parse( $self->{headers_by_name}->{sender} );
@@ -148,23 +148,23 @@ sub message_sender {
 
 sub result {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
     return $self->{result};
 }
 
 sub result_detail {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     if ( $self->{details} ) {
-        return $self->{result} . " (" . $self->{details} . ")";
+        return $self->{result} . ' (' . $self->{details} . ')';
     }
     return $self->{result};
 }
 
 sub signature {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
     return $self->{signature};
 }
 

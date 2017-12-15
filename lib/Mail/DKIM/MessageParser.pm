@@ -44,7 +44,7 @@ sub init {
 sub PRINT {
     my $self    = shift;
     my $buf_ref = $self->{buf_ref};
-    $$buf_ref .= @_ == 1 ? $_[0] : join( "", @_ ) if @_;
+    $$buf_ref .= @_ == 1 ? $_[0] : join( '', @_ ) if @_;
 
     if ( $self->{in_header} ) {
         local $1;    # avoid polluting a global $1
@@ -108,15 +108,15 @@ sub CLOSE {
 }
 
 sub add_header {
-    die "add_header not implemented";
+    die 'add_header not implemented';
 }
 
 sub finish_header {
-    die "finish_header not implemented";
+    die 'finish_header not implemented';
 }
 
 sub add_body {
-    die "add_body not implemented";
+    die 'add_body not implemented';
 }
 
 sub finish_body {
@@ -125,7 +125,7 @@ sub finish_body {
 }
 
 sub reset {
-    carp "reset not implemented";
+    carp 'reset not implemented';
 }
 
 1;

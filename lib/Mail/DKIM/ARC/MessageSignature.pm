@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::ARC::MessageSignature;
-use base "Mail::DKIM::Signature";
+use base 'Mail::DKIM::Signature';
 use Carp;
 
 =head1 NAME
@@ -24,14 +24,14 @@ This is a subclass of Mail::DKIM::Signature
 =head2 new() - create a new signature from parameters
 
   my $signature = Mail::DKIM::ARC::MessageSignature->new(
-                      [ Algorithm => "rsa-sha256", ]
+                      [ Algorithm => 'rsa-sha256', ]
                       [ Signature => $base64, ]
-                      [ Method => "relaxed", ]
-                      [ Domain => "example.org", ]
+                      [ Method => 'relaxed', ]
+                      [ Domain => 'example.org', ]
                       [ Instance => 1, ]
-                      [ Headers => "from:subject:date:message-id", ]
-                      [ Query => "dns", ]
-                      [ Selector => "alpha", ]
+                      [ Headers => 'from:subject:date:message-id', ]
+                      [ Query => 'dns', ]
+                      [ Selector => 'alpha', ]
                       [ Timestamp => time(), ]
                       [ Expiration => time() + 86400, ]
                   );

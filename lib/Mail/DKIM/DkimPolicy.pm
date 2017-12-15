@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::DkimPolicy;
-use base "Mail::DKIM::Policy";
+use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()
 
@@ -45,7 +45,7 @@ L<http://tools.ietf.org/html/draft-ietf-dkim-ssp-02>.
 Lookup a DKIM signing practices record.
 
   my $policy = Mail::DKIM::DkimPolicy->fetch(
-            Protocol => "dns",
+            Protocol => 'dns',
             Author => 'jsmith@example.org',
           );
 
@@ -68,7 +68,7 @@ sub get_lookup_name {
     }
 
     # IETF seems poised to create policy records this way
-    return "_policy._domainkey." . $prms->{Domain};
+    return '_policy._domainkey.' . $prms->{Domain};
 }
 
 =head2 new()
@@ -81,7 +81,7 @@ Construct a default policy object.
 
 sub new {
     my $class = shift;
-    return $class->parse( String => "o=~" );
+    return $class->parse( String => 'o=~' );
 }
 
 #undocumented private class method
@@ -140,7 +140,7 @@ sub apply {
     foreach my $signature ( $dkim->signatures ) {
 
         # only valid/verified signatures are considered
-        next unless ( $signature->result && $signature->result eq "pass" );
+        next unless ( $signature->result && $signature->result eq 'pass' );
 
         my $oa = $dkim->message_originator->address;
         if ( $signature->identity_matches($oa) ) {
@@ -153,18 +153,18 @@ sub apply {
 
     #TODO - consider testing flag
 
-    return "accept" if $first_party;
-    return "reject" if ( $self->signall_strict && !$self->testing );
+    return 'accept' if $first_party;
+    return 'reject' if ( $self->signall_strict && !$self->testing );
 
     if ( $self->signall ) {
 
         # is there ANY valid signature?
         my $verify_result = $dkim->result;
-        return "accept" if $verify_result eq "pass";
+        return 'accept' if $verify_result eq 'pass';
     }
 
-    return "reject" if ( $self->signall && !$self->testing );
-    return "neutral";
+    return 'reject' if ( $self->signall && !$self->testing );
+    return 'neutral';
 }
 
 =head2 flags()
@@ -236,7 +236,7 @@ sub location {
 }
 
 sub name {
-    return "author";
+    return 'author';
 }
 
 =head2 policy()
@@ -281,7 +281,7 @@ sub policy {
         return $self->{tags}->{o};
     }
     else {
-        return "unknown";
+        return 'unknown';
     }
 }
 
@@ -296,7 +296,7 @@ sub signall {
 
     return $self->policy
       && ( $self->policy =~ /all/i
-        || $self->policy eq "-" );    # an older symbol for "all"
+        || $self->policy eq '-' );    # an older symbol for "all"
 }
 
 =head2 signall_strict()
@@ -310,7 +310,7 @@ sub signall_strict {
 
     return $self->policy
       && ( $self->policy =~ /strict/i
-        || $self->policy eq "!" );    # "!" is an older symbol for "strict"
+        || $self->policy eq '!' );    # "!" is an older symbol for "strict"
 }
 
 sub signsome {
@@ -319,7 +319,7 @@ sub signsome {
     $self->policy
       or return 1;
 
-    $self->policy eq "~"
+    $self->policy eq '~'
       and return 1;
 
     return;

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::ARC::Seal;
-use base "Mail::DKIM::ARC::MessageSignature";
+use base 'Mail::DKIM::ARC::MessageSignature';
 
 =head1 NAME
 

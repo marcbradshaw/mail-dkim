@@ -68,8 +68,8 @@ sub calculate_EM {
 
     # RFC 3447, page 42, provides the following octet values:
     my %digest_encoding = (
-        "SHA-1"   => pack( "H*", "3021300906052B0E03021A05000414" ),
-        "SHA-256" => pack( "H*", "3031300d060960864801650304020105000420" ),
+        'SHA-1'   => pack( 'H*', '3021300906052B0E03021A05000414' ),
+        'SHA-256' => pack( 'H*', '3031300d060960864801650304020105000420' ),
     );
 
     defined $digest_encoding{$digest_algorithm}
@@ -79,7 +79,7 @@ sub calculate_EM {
     my $tLen = length($T);
 
     if ( $emLen < $tLen + 11 ) {
-        die "Intended encoded message length too short.";
+        die 'Intended encoded message length too short.';
     }
 
     my $PS = chr(0xff) x ( $emLen - $tLen - 3 );

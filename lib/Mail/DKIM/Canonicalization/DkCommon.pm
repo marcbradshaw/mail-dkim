@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::DkCommon;
-use base "Mail::DKIM::Canonicalization::Base";
+use base 'Mail::DKIM::Canonicalization::Base';
 use Carp;
 
 sub init {

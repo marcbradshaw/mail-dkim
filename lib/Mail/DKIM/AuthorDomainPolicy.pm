@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::AuthorDomainPolicy;
-use base "Mail::DKIM::Policy";
+use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()
 
@@ -40,7 +40,7 @@ itself at L<http://tools.ietf.org/html/rfc5617>.
 Lookup an ADSP record in DNS.
 
   my $policy = Mail::DKIM::AuthorDomainPolicy->fetch(
-            Protocol => "dns",
+            Protocol => 'dns',
             Author => 'jsmith@example.org',
           );
 
@@ -78,8 +78,8 @@ sub fetch {
             die "no domain to fetch policy for\n";
         }
 
-        my @resp = Mail::DKIM::DNS::query( $prms{Domain}, "MX" );
-        if ( !@resp && $@ eq "NXDOMAIN" ) {
+        my @resp = Mail::DKIM::DNS::query( $prms{Domain}, 'MX' );
+        if ( !@resp && $@ eq 'NXDOMAIN' ) {
             return $class->nxdomain_policy;
         }
     }
@@ -105,7 +105,7 @@ sub get_lookup_name {
     }
 
     # IETF seems poised to create policy records this way
-    return "_adsp._domainkey." . $prms->{Domain};
+    return '_adsp._domainkey.' . $prms->{Domain};
 }
 
 =head2 new()
@@ -118,7 +118,7 @@ Construct a default policy object.
 
 sub new {
     my $class = shift;
-    return $class->parse( String => "" );
+    return $class->parse( String => '' );
 }
 
 =head2 parse()
@@ -126,8 +126,8 @@ sub new {
 Construct an ADSP record from a string.
 
   my $policy = Mail::DKIM::AuthorDomainPolicy->parse(
-          String => "dkim=all",
-          Domain => "aaa.example",
+          String => 'dkim=all',
+          Domain => 'aaa.example',
       );
 
 =cut
@@ -148,7 +148,7 @@ sub nxdomain_policy {
     my $class = shift;
     if ( !$NXDOMAIN_POLICY ) {
         $NXDOMAIN_POLICY = $class->new;
-        $NXDOMAIN_POLICY->policy("NXDOMAIN");
+        $NXDOMAIN_POLICY->policy('NXDOMAIN');
     }
     return $NXDOMAIN_POLICY;
 }
@@ -204,7 +204,7 @@ sub apply {
     my $first_party;
 
     my @passing_signatures =
-      grep { $_->result && $_->result eq "pass" } $dkim->signatures;
+      grep { $_->result && $_->result eq 'pass' } $dkim->signatures;
 
     foreach my $signature (@passing_signatures) {
         my $author_domain = $dkim->message_originator->host;
@@ -216,10 +216,10 @@ sub apply {
         }
     }
 
-    return "accept" if $first_party;
-    return "reject" if ( $self->signall_strict );
+    return 'accept' if $first_party;
+    return 'reject' if ( $self->signall_strict );
 
-    return "neutral";
+    return 'neutral';
 }
 
 =head2 is_implied_default_policy()
@@ -260,7 +260,7 @@ sub location {
 }
 
 sub name {
-    return "ADSP";
+    return 'ADSP';
 }
 
 =head2 policy()
@@ -309,7 +309,7 @@ sub policy {
         return $self->{tags}->{dkim};
     }
     else {
-        return "unknown";
+        return 'unknown';
     }
 }
 

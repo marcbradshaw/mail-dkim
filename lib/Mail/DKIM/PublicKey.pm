@@ -12,7 +12,7 @@ use warnings;
 
 package Mail::DKIM::PublicKey;
 
-use base ( "Mail::DKIM::KeyValueList", "Mail::DKIM::Key" );
+use base ( 'Mail::DKIM::KeyValueList', 'Mail::DKIM::Key' );
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;
 
 use Mail::DKIM::DNS;
@@ -26,7 +26,7 @@ sub new {
     $self->{'GRAN'} = $prms{'Granularity'};
     $self->{'NOTE'} = $prms{'Note'};
     $self->{'TEST'} = $prms{'Testing'};
-    $self->{'TYPE'} = ( $prms{'Type'} or "rsa" );
+    $self->{'TYPE'} = ( $prms{'Type'} or 'rsa' );
     $self->{'DATA'} = $prms{'Data'};
 
     bless $self, $type;
@@ -37,9 +37,9 @@ sub new {
 =head2 fetch() - retrieve a public key record from DNS
 
   my $public_key = Mail::DKIM::PublicKey->fetch(
-                      Protocol => "dns",
-                      Selector => "brisbane",
-                      Domain => "example.com",
+                      Protocol => 'dns',
+                      Selector => 'brisbane',
+                      Domain => 'example.com',
                     );
 
 If the public key is found, a L<Mail::DKIM::PublicKey> object
@@ -65,9 +65,9 @@ sub fetch {
 #
 # Usage:
 #   my $fut = Mail::DKIM::PublicKey->fetch_async(
-#                      Protocol => "dns/txt",
-#                      Selector => "selector1",
-#                      Domain => "example.org",
+#                      Protocol => 'dns/txt',
+#                      Selector => 'selector1',
+#                      Domain => 'example.org',
 #                      Callbacks => { ... }, #optional
 #                      );
 #
@@ -99,17 +99,17 @@ sub fetch_async {
 
         my $strn;
         foreach my $rr (@resp) {
-            next unless $rr->type eq "TXT";
+            next unless $rr->type eq 'TXT';
 
             # join with no intervening spaces, RFC 6376
             if ( Net::DNS->VERSION >= 0.69 ) {
 
                 # must call txtdata() in a list context
-                $strn = join "", $rr->txtdata;
+                $strn = join '', $rr->txtdata;
             }
             else {
                 # char_str_list method is 'historical'
-                $strn = join "", $rr->char_str_list;
+                $strn = join '', $rr->char_str_list;
             }
             last;
         }
@@ -127,9 +127,9 @@ sub fetch_async {
     #
     # perform DNS query for public key...
     #
-    my $host = $prms{Selector} . "._domainkey." . $prms{Domain};
+    my $host = $prms{Selector} . '._domainkey.' . $prms{Domain};
     my $waiter =
-      Mail::DKIM::DNS::query_async( $host, "TXT", Callbacks => \%callbacks, );
+      Mail::DKIM::DNS::query_async( $host, 'TXT', Callbacks => \%callbacks, );
     return $waiter;
 }
 
@@ -143,8 +143,8 @@ sub check {
     my $self = shift;
 
     # check public key version tag
-    if ( my $v = $self->get_tag("v") ) {
-        unless ( $v eq "DKIM1" ) {
+    if ( my $v = $self->get_tag('v') ) {
+        unless ( $v eq 'DKIM1' ) {
             die "unsupported version\n";
         }
     }
@@ -153,8 +153,8 @@ sub check {
     my $g = $self->granularity;
 
     # check key type
-    if ( my $k = $self->get_tag("k") ) {
-        unless ( $k eq "rsa" ) {
+    if ( my $k = $self->get_tag('k') ) {
+        unless ( $k eq 'rsa' ) {
             die "unsupported key type\n";
         }
     }
@@ -164,7 +164,7 @@ sub check {
     if ( not defined $p ) {
         die "missing p= tag\n";
     }
-    if ( $p eq "" ) {
+    if ( $p eq '' ) {
         die "revoked\n";
     }
     unless ( $p =~ /^[A-Za-z0-9\+\/\=]+$/ ) {
@@ -187,9 +187,9 @@ sub check {
     }
 
     # check service type
-    if ( my $s = $self->get_tag("s") ) {
+    if ( my $s = $self->get_tag('s') ) {
         my @list = split( /:/, $s );
-        unless ( grep { $_ eq "*" || $_ eq "email" } @list ) {
+        unless ( grep { $_ eq '*' || $_ eq 'email' } @list ) {
             die "does not support email\n";
         }
     }
@@ -218,8 +218,8 @@ sub check_granularity {
     # yuck- what is this $empty_g_means_wildcard parameter?
     # well, it turns out that with DomainKeys signatures,
     # an empty g= is the same as g=*
-    if ( $g eq "" && $empty_g_means_wildcard ) {
-        $g = "*";
+    if ( $g eq '' && $empty_g_means_wildcard ) {
+        $g = '*';
     }
 
     # split i= value into a "local part" and a "domain part"
@@ -229,7 +229,7 @@ sub check_granularity {
         $domain_part = $2;
     }
     else {
-        $local_part  = "";
+        $local_part  = '';
         $domain_part = $identity;
     }
 
@@ -256,7 +256,7 @@ sub check_granularity {
         }
     }
     else {
-        if ( $g eq "" ) {
+        if ( $g eq '' ) {
             $@ = "granularity is empty\n";
             return;
         }
@@ -285,7 +285,7 @@ sub check_hash_algorithm {
     my ($hash_algorithm) = @_;
 
     # check hash algorithm
-    if ( my $h = $self->get_tag("h") ) {
+    if ( my $h = $self->get_tag('h') ) {
         my @list = split( /:/, $h );
         unless ( grep { $_ eq $hash_algorithm } @list ) {
             die "does not support hash algorithm '$hash_algorithm'\n";
@@ -316,7 +316,7 @@ sub convert {
     $cert .= "-----END PUBLIC KEY-----\n";
 
     my $cork = Crypt::OpenSSL::RSA->new_public_key($cert)
-      or die "unable to generate public key object";
+      or die 'unable to generate public key object';
 
     # segfaults on my machine
     #	$cork->check_key or
@@ -346,7 +346,7 @@ sub verify {
 
   my $g = $public_key->granularity;
 
-  $public_key->granularity("*");
+  $public_key->granularity('*');
 
 Granularity of the key. The value must match the Local-part of the
 effective "i=" tag of the DKIM-Signature header field.
@@ -363,9 +363,9 @@ sub granularity {
 
     # set new granularity if provided
     (@_)
-      and $self->set_tag( "g", shift );
+      and $self->set_tag( 'g', shift );
 
-    my $g = $self->get_tag("g");
+    my $g = $self->get_tag('g');
     if ( defined $g ) {
         return $g;
     }
@@ -378,18 +378,18 @@ sub notes {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "n", shift );
+      and $self->set_tag( 'n', shift );
 
-    return $self->get_tag("n");
+    return $self->get_tag('n');
 }
 
 sub data {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "p", shift );
+      and $self->set_tag( 'p', shift );
 
-    my $p = $self->get_tag("p");
+    my $p = $self->get_tag('p');
 
     # remove whitespace (actually only LWSP is allowed)
     $p =~ tr/\015\012 \t//d if defined $p;
@@ -400,9 +400,9 @@ sub flags {
     my $self = shift;
 
     (@_)
-      and $self->set_tag( "t", shift );
+      and $self->set_tag( 't', shift );
 
-    return $self->get_tag("t") || "";
+    return $self->get_tag('t') || '';
 }
 
 # subdomain_flag() - checks whether "s" is specified in flags
@@ -412,7 +412,7 @@ sub flags {
 sub subdomain_flag {
     my $self = shift;
     my @flags = split /:/, $self->flags;
-    return grep { $_ eq "s" } @flags;
+    return grep { $_ eq 's' } @flags;
 }
 
 sub revoked {
@@ -429,7 +429,7 @@ sub testing {
 
     my $flags = $self->flags;
     my @flaglist = split( /:/, $flags );
-    if ( grep { $_ eq "y" } @flaglist ) {
+    if ( grep { $_ eq 'y' } @flaglist ) {
         return 1;
     }
     return undef;
@@ -438,7 +438,7 @@ sub testing {
 sub verify_sha1_digest {
     my $self = shift;
     my ( $digest, $signature ) = @_;
-    return $self->verify_digest( "SHA-1", $digest, $signature );
+    return $self->verify_digest( 'SHA-1', $digest, $signature );
 }
 
 # verify_digest() - returns true if the digest verifies, false otherwise
@@ -451,7 +451,7 @@ sub verify_digest {
 
     my $rsa_pub = $self->cork;
     if ( !$rsa_pub ) {
-        $@ = $@ ne '' ? "RSA failed: $@" : "RSA unknown problem";
+        $@ = $@ ne '' ? "RSA failed: $@" : 'RSA unknown problem';
         $@ .= ", s=$self->{Selector} d=$self->{Domain}";
         return;
     }
@@ -475,11 +475,11 @@ sub verify_digest {
         substr( $verify_result, 0, $prefix_len ) eq
         substr( $expected,      0, $prefix_len ) )
     {
-        $@ = "message has been altered";
+        $@ = 'message has been altered';
         return;
     }
 
-    $@ = "bad RSA signature";
+    $@ = 'bad RSA signature';
     return;
 }
 

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::dk_simple;
-use base "Mail::DKIM::Canonicalization::DkCommon";
+use base 'Mail::DKIM::Canonicalization::DkCommon';
 use Carp;
 
 sub init {
@@ -22,7 +22,7 @@ sub init {
 
 sub canonicalize_header {
     my $self = shift;
-    croak "wrong number of parameters" unless ( @_ == 1 );
+    croak 'wrong number of parameters' unless ( @_ == 1 );
     my ($line) = @_;
 
     return $line;

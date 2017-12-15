@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::Base;
-use base "Mail::DKIM::MessageParser";
+use base 'Mail::DKIM::MessageParser';
 use Carp;
 
 sub new {
@@ -28,7 +28,7 @@ sub init {
         || $self->{output_digest}
         || $self->{buffer} )
     {
-        $self->{result} = "";
+        $self->{result} = '';
         $self->{buffer} = \$self->{result};
     }
 }
@@ -54,13 +54,13 @@ sub output {
 
     # this supports Debug_Canonicalization
     if ( my $debug = $self->{Debug_Canonicalization} ) {
-        if ( UNIVERSAL::isa( $debug, "SCALAR" ) ) {
+        if ( UNIVERSAL::isa( $debug, 'SCALAR' ) ) {
             $$debug .= $_[0];
         }
-        elsif ( UNIVERSAL::isa( $debug, "GLOB" ) ) {
+        elsif ( UNIVERSAL::isa( $debug, 'GLOB' ) ) {
             print $debug @_;
         }
-        elsif ( UNIVERSAL::isa( $debug, "IO::Handle" ) ) {
+        elsif ( UNIVERSAL::isa( $debug, 'IO::Handle' ) ) {
             $debug->print(@_);
         }
     }

@@ -56,7 +56,7 @@ sub fetch_async {
     my $class = shift;
     my %prms  = @_;
 
-    ( $prms{'Protocol'} eq "dns" )
+    ( $prms{'Protocol'} eq 'dns' )
       or die "invalid protocol '$prms{Protocol}'\n";
 
     my $host       = $class->get_lookup_name( \%prms );
@@ -73,17 +73,17 @@ sub fetch_async {
 
         my $strn;
         foreach my $rr (@resp) {
-            next unless $rr->type eq "TXT";
+            next unless $rr->type eq 'TXT';
 
             # join with no intervening spaces, RFC 5617
             if ( Net::DNS->VERSION >= 0.69 ) {
 
                 # must call txtdata() in a list context
-                $strn = join "", $rr->txtdata;
+                $strn = join '', $rr->txtdata;
             }
             else {
                 # char_str_list method is 'historical'
-                $strn = join "", $rr->char_str_list;
+                $strn = join '', $rr->char_str_list;
             }
         }
 
@@ -104,7 +104,7 @@ sub fetch_async {
     # perform DNS query for domain policy...
     #
     my $waiter =
-      Mail::DKIM::DNS::query_async( $host, "TXT", Callbacks => \%callbacks, );
+      Mail::DKIM::DNS::query_async( $host, 'TXT', Callbacks => \%callbacks, );
     return $waiter;
 }
 
@@ -112,7 +112,7 @@ sub parse {
     my $class = shift;
     my %prms  = @_;
 
-    my $text = $prms{"String"};
+    my $text = $prms{'String'};
     my %tags;
     foreach my $tag ( split /;/, $text ) {
 
@@ -174,7 +174,7 @@ sub apply {
 
     my $first_party;
     foreach my $signature ( $dkim->signatures ) {
-        next if $signature->result ne "pass";
+        next if $signature->result ne 'pass';
 
         my $oa = $dkim->message_sender->address;
         if ( $signature->identity_matches($oa) ) {
@@ -185,9 +185,9 @@ sub apply {
         }
     }
 
-    return "accept" if $first_party;
-    return "reject" if ( $self->signall && !$self->testing );
-    return "neutral";
+    return 'accept' if $first_party;
+    return 'reject' if ( $self->signall && !$self->testing );
+    return 'neutral';
 }
 
 =head2 as_string()
@@ -203,7 +203,7 @@ sub as_string {
     my $self = shift;
 
     return join(
-        "; ", map { "$_=" . $self->{tags}->{$_} }
+        '; ', map { "$_=" . $self->{tags}->{$_} }
           keys %{ $self->{tags} }
     );
 }

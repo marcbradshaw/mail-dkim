@@ -30,9 +30,9 @@ sub new {
 sub init {
     my $self = shift;
 
-    croak "no signature" unless $self->{Signature};
+    croak 'no signature' unless $self->{Signature};
 
-    $self->{mode} = $self->{Signature}->signature ? "verify" : "sign";
+    $self->{mode} = $self->{Signature}->signature ? 'verify' : 'sign';
 
     # allows subclasses to set the header_digest and body_digest
     # properties
@@ -57,20 +57,20 @@ sub init {
 # override this method, please...
 # this method should set the "header_digest" and "body_digest" properties
 sub init_digests {
-    die "not implemented";
+    die 'not implemented';
 }
 
 # private method - DKIM-specific
 sub get_canonicalization_class {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($method) = @_;
 
     my $class =
-        $method eq "nowsp"   ? "Mail::DKIM::Canonicalization::nowsp"
-      : $method eq "relaxed" ? "Mail::DKIM::Canonicalization::relaxed"
-      : $method eq "simple"  ? "Mail::DKIM::Canonicalization::simple"
-      : $method eq "seal"    ? "Mail::DKIM::Canonicalization::seal"
+        $method eq 'nowsp'   ? 'Mail::DKIM::Canonicalization::nowsp'
+      : $method eq 'relaxed' ? 'Mail::DKIM::Canonicalization::relaxed'
+      : $method eq 'simple'  ? 'Mail::DKIM::Canonicalization::simple'
+      : $method eq 'seal'    ? 'Mail::DKIM::Canonicalization::seal'
       :                        die "unknown method $method\n";
     return $class;
 }
@@ -184,7 +184,7 @@ sub check_body_hash {
         my $body_hash = $self->{body_hash};
         my $expected  = decode_base64($sighash);
         if ( $body_hash ne $expected ) {
-            $self->{verification_details} = "body has been altered";
+            $self->{verification_details} = 'body has been altered';
 
             #		print STDERR "I calculated  "
             #			. encode_base64($body_hash, "") . "\n";
@@ -204,12 +204,12 @@ sub finish_message {
     # "prettify" it.
 
     $self->{body_hash} = $self->{body_digest}->digest;
-    if ( $self->{mode} eq "sign" ) {
+    if ( $self->{mode} eq 'sign' ) {
         $self->{Signature}
-          ->body_hash( encode_base64( $self->{body_hash}, "" ) );
+          ->body_hash( encode_base64( $self->{body_hash}, '' ) );
     }
 
-    if ( $self->{mode} eq "sign" ) {
+    if ( $self->{mode} eq 'sign' ) {
         $self->{Signature}->prettify;
     }
 
@@ -227,7 +227,7 @@ sub finish_message {
 
 # override this method, please...
 sub sign {
-    die "Not implemented";
+    die 'Not implemented';
 }
 
 =head2 signature() - get/set the signature worked on by this algorithm
@@ -260,7 +260,7 @@ $algorithm->{verification_details} or $@.
 
 # override this method, please...
 sub verify {
-    die "Not implemented";
+    die 'Not implemented';
 }
 
 1;

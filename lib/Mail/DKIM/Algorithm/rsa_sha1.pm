@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Algorithm::rsa_sha1;
-use base "Mail::DKIM::Algorithm::Base";
+use base 'Mail::DKIM::Algorithm::Base';
 use Carp;
 use MIME::Base64;
 use Digest::SHA;
@@ -26,25 +26,25 @@ sub init_digests {
 
 sub sign {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 1 );
+    croak 'wrong number of arguments' unless ( @_ == 1 );
     my ($private_key) = @_;
 
     my $digest = $self->{header_digest}->digest;
-    my $signature = $private_key->sign_digest( "SHA-1", $digest );
+    my $signature = $private_key->sign_digest( 'SHA-1', $digest );
 
-    return encode_base64( $signature, "" );
+    return encode_base64( $signature, '' );
 }
 
 sub verify {
     my $self = shift;
-    croak "wrong number of arguments" unless ( @_ == 0 );
+    croak 'wrong number of arguments' unless ( @_ == 0 );
 
     my $base64     = $self->signature->data;
     my $public_key = $self->signature->get_public_key;
 
     my $sig    = decode_base64($base64);
     my $digest = $self->{header_digest}->digest;
-    return unless $public_key->verify_digest( "SHA-1", $digest, $sig );
+    return unless $public_key->verify_digest( 'SHA-1', $digest, $sig );
     return $self->check_body_hash;
 }
 

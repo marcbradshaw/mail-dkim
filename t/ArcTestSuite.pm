@@ -297,6 +297,7 @@ __END__
 
 =head1 AUTHORS
 
+Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>,
 Bron Gondwana, E<lt>brong@fastmailteam.comE<gt>,
 John Levine, E<lt>john.levine@standcore.comE<gt>
 

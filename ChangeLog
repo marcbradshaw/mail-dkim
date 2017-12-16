@@ -1,5 +1,10 @@
  -- VERSION 0.50 --
 
+2017-12-16: Marc Bradshaw <marc@marcbradshaw.net>
+
+ * Added Strict mode to DKIM verifier
+ * Code formatting fixes
+
 2017-12-14: John Levine <john.levine@standcore.com>
 
 * Make ARC code work a lot better

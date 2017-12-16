@@ -106,6 +106,12 @@ is written to the referenced string or file handle.
 
 =back
 
+=item Strict
+
+If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
+
+=back
+
 =cut
 
 package Mail::DKIM::Verifier;
@@ -241,6 +247,19 @@ sub check_signature {
         }
         else {
             $self->{signature_reject_reason} = 'missing v tag';
+        }
+        return 0;
+    }
+
+    unless ( $signature->algorithm
+        && $signature->get_algorithm_class( $signature->algorithm )
+        && ( !$self->{Strict} || $signature->algorithm ne 'rsa-sha1' )
+      )    # no more SHA1 for us in strict mode
+    {
+        # unsupported algorithm
+        $self->{signature_reject_reason} = 'unsupported algorithm';
+        if ( defined $signature->algorithm ) {
+            $self->{signature_reject_reason} .= ' ' . $signature->algorithm;
         }
         return 0;
     }
@@ -426,6 +445,13 @@ sub _check_and_verify_signature {
 
     unless ( $self->check_public_key( $signature, $pkey ) ) {
         return ( 'invalid', $self->{signature_reject_reason} );
+    }
+
+    # make sure key is big enough
+    my $keysize = $pkey->cork->size * 8;    # in bits
+    if ( $keysize < 1024 && $self->{Strict} ) {
+        $self->{signature_reject_reason} = "Key length $keysize too short";
+        return ( 'fail', $self->{signature_reject_reason} );
     }
 
     # verify signature

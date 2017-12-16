@@ -535,7 +535,6 @@ sub _check_and_verify_signature {
     if ( $keysize < 1024 && $self->{Strict} ) {
         $self->{signature_reject_reason} = "Key length $keysize too short";
         return ( 'fail', $self->{signature_reject_reason} );
-
     }
 
     # verify signature

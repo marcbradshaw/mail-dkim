@@ -95,7 +95,7 @@ Constructs an object-oriented verifier.
 
   my $dkim = Mail::DKIM::Verifier->new(%options);
 
-The only option supported at this time is:
+The only options supported at this time are:
 
 =over
 

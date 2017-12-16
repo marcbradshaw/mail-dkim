@@ -89,7 +89,7 @@ Constructs an object-oriented verifier.
 
   my $arc = Mail::DKIM::ARC::Verifier->new(%options);
 
-The only options supported at this time is:
+The only options supported at this time are:
 
 =over
 

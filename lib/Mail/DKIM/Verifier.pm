@@ -264,17 +264,6 @@ sub check_signature {
         return 0;
     }
 
-    unless ( $signature->algorithm
-        && $signature->get_algorithm_class( $signature->algorithm ) )
-    {
-        # unsupported algorithm
-        $self->{signature_reject_reason} = 'unsupported algorithm';
-        if ( defined $signature->algorithm ) {
-            $self->{signature_reject_reason} .= ' ' . $signature->algorithm;
-        }
-        return 0;
-    }
-
     unless ( $signature->check_canonicalization ) {
 
         # unsupported canonicalization method

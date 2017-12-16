@@ -151,3 +151,4 @@ t/test.key
 t/test5.txt
 t/textwrap.t
 t/verifier.t
+t/verifier_strict.t

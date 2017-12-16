@@ -185,7 +185,7 @@ sub test_email
 	$dkim->CLOSE;
 	my $result = $dkim->result;
 	print "#   result: " . $dkim->result_detail . "\n";
-        #	ok($result eq $expected_result, "'$file' should '$expected_result'");
+	ok($result eq $expected_result, "'$file' should '$expected_result'");
 }
 
 # override the DNS implementation, so that these tests do not

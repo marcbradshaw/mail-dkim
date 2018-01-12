@@ -33,7 +33,8 @@ sub new {
     my ( $class, %args ) = @_;
     my $self = {};
     bless $self, $class;
-    $self->{Strict} = $args{"Strict"} // 1;
+    $self->{Strict} = $args{"Strict"};
+    $self->{Strict} = 1 if ! defined $self->{Strict};
     return $self;
 }
 

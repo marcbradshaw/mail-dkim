@@ -1,3 +1,9 @@
+ -- VERSION 0.52 --
+
+2018-01-12: Marc Bradshaw <marc@marcbradshaw.net>
+
+ * Internet connection tests were declared in the wrong order
+
  -- VERSION 0.51 --
 
 2018-01-12: Marc Bradshaw <marc@marcbradshaw.net>

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-require 5.010;
+#require 5.010;
 
 package Mail::DKIM;
 our $VERSION = 0.51;

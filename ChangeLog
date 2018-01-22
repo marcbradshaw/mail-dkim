@@ -1,3 +1,7 @@
+ -- VERSION 0.53 --
+
+ * Make tests less dependent on local resolver setup
+
  -- VERSION 0.52 --
 
 2018-01-12: Marc Bradshaw <marc@marcbradshaw.net>

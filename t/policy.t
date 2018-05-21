@@ -9,6 +9,12 @@ use Test::More tests => 19;
 use Mail::DKIM::DkPolicy;
 use Mail::DKIM::DkimPolicy;
 use Mail::DKIM::AuthorDomainPolicy;
+use Net::DNS::Resolver;
+
+my $Resolver = Net::DNS::Resolver->new(
+    nameservers => [ '1.1.1.1', '8.8.8.8' ],
+);
+Mail::DKIM::DNS::resolver( $Resolver );
 
 my $policy;
 $policy = Mail::DKIM::DkPolicy->new();

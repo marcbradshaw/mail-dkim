@@ -1,6 +1,9 @@
  -- VERSION 0.53 --
 
+2018-05-27: Marc Bradshaw <marc@marcbradshaw.net>
+
  * Make tests less dependent on local resolver setup
+ * Add thanks to Valimail
 
  -- VERSION 0.52 --
 

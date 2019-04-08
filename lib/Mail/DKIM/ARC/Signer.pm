@@ -249,7 +249,7 @@ sub finish_header {
         $header =~ s/[\r\n]+$//;
         if ( $header =~ m/^Authentication-Results:/ ) {
             my ( $ardom, $arval ) = $header =~
-              m/^Authentication-Results:\s*([-.0-9a-z]+)\s*;\s*(.*)/is;
+              m/^Authentication-Results:\s*([-.0-9a-z]+)\s*[^;]*;\s*(.*)/is;
 
             next
               unless "\L$ardom" eq $self->{SrvId};   # make sure it's our domain

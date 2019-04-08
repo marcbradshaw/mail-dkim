@@ -10,6 +10,7 @@ WriteMakefile(
         Crypt::OpenSSL::RSA      => 0.24,
         Digest::SHA              => 0,
         Mail::Address            => 0,
+        Mail::AuthenticationResults => 1.20180215,
         MIME::Base64             => 0,
         Net::DNS                 => 0,
         Test::Simple             => 0,      # only needed for `make test'

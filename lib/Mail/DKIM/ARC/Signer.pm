@@ -12,6 +12,8 @@ use warnings;
 use Mail::DKIM::PrivateKey;
 use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;
+use Mail::AuthenticationResults::Parser;
+use Mail::AuthenticationResults::Header::AuthServID;
 
 =head1 NAME
 
@@ -248,8 +250,9 @@ sub finish_header {
     foreach my $header ( @{ $self->{headers} } ) {
         $header =~ s/[\r\n]+$//;
         if ( $header =~ m/^Authentication-Results:/ ) {
-            my ( $ardom, $arval ) = $header =~
-              m/^Authentication-Results:\s*([-.0-9a-z]+)\s*[^;]*;\s*(.*)/is;
+            my ( $arval ) = $header =~ m/^Authentication-Results:[^;]*;\s*(.*)/is;
+            my $parsed = Mail::AuthenticationResults::Parser->new->parse( $header );
+            my $ardom = $parsed->value->value;
 
             next
               unless "\L$ardom" eq $self->{SrvId};   # make sure it's our domain

@@ -410,7 +410,7 @@ sub check_public_key {
 #        my $empty_g_means_wildcard = $signature->isa('Mail::DKIM::DkSignature');
 
         # check public key's granularity
-        $result &&= $public_key->check_granularity( $signature->instance, 0 );
+        $result &&= $public_key->check_granularity( $signature->domain, 0 );
 
         #                $signature->instance, $empty_g_means_wildcard);
 

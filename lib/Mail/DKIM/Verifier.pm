@@ -104,8 +104,6 @@ The only options supported at this time are:
 if specified, the canonicalized message for the first signature
 is written to the referenced string or file handle.
 
-=back
-
 =item Strict
 
 If true, rejects sha1 hashes and signing keys shorter than 1024 bits.

@@ -268,7 +268,7 @@ sub check_granularity {
 
     # check subdomains
     if ( $self->subdomain_flag ) {
-        unless ( $domain_part eq lc( $self->{'Domain'} ) ) {
+        unless ( lc( $domain_part ) eq lc( $self->{'Domain'} ) ) {
             $@ = "does not support signing subdomains\n";
             return;
         }

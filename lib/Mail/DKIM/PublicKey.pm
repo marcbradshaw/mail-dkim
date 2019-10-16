@@ -391,8 +391,8 @@ sub data {
 
     my $p = $self->get_tag('p');
 
-    # remove whitespace (actually only LWSP is allowed)
-    $p =~ tr/\015\012 \t//d if defined $p;
+    # remove whitespace (actually only LWSP is allowed) and double quote (long string delimiter)
+    $p =~ tr/\015\012 \t"//d  if defined $p;
     return $p;
 }
 

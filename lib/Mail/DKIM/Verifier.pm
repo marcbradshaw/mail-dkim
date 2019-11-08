@@ -156,6 +156,7 @@ sub handle_header {
 
     if ( lc($field_name) eq 'dkim-signature' ) {
         eval {
+            local $SIG{__DIE__};
             my $signature = Mail::DKIM::Signature->parse($line);
             $self->add_signature($signature);
         };
@@ -173,6 +174,7 @@ sub handle_header {
 
     if ( lc($field_name) eq 'domainkey-signature' ) {
         eval {
+            local $SIG{__DIE__};
             my $signature = Mail::DKIM::DkSignature->parse($line);
             $self->add_signature($signature);
         };
@@ -329,6 +331,7 @@ sub check_public_key {
 
     my $result = 0;
     eval {
+        local $SIG{__DIE__};
         $@ = undef;
 
         # HACK- I'm indecisive here about whether I want the

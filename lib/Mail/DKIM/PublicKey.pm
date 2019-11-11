@@ -172,7 +172,10 @@ sub check {
     }
 
     # have OpenSSL load the key
-    eval { $self->cork; };
+    eval {
+        local $SIG{__DIE__};
+        $self->cork;
+    };
     if ($@) {
 
         # see also finish_body
@@ -333,7 +336,10 @@ sub verify {
 
     my $rtrn;
 
-    eval { $rtrn = $self->cork->verify( $prms{'Text'}, $prms{'Signature'} ); };
+    eval {
+        local $SIG{__DIE__};
+        $rtrn = $self->cork->verify( $prms{'Text'}, $prms{'Signature'} );
+    };
 
     $@
       and $self->errorstr($@),

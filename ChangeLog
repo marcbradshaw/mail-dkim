@@ -1,3 +1,9 @@
+2019-11-08: Martin Sluka <fany@cpan.org>
+
+ * Prevent outer $SIG{__DIE__} handlers from being called
+   when an exception in an eval {} occurs
+   (fixes https://rt.cpan.org/Ticket/Display.html?id=130928)
+
 -- VERSION 0.57 --
 
 2019-10-08: Marc Bradshaw <marc@marcbradshaw.net>

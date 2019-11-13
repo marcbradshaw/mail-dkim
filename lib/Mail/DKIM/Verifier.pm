@@ -115,7 +115,7 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 package Mail::DKIM::Verifier;
 use base 'Mail::DKIM::Common';
 use Carp;
-our $VERSION                   = 0.57;
+our $VERSION                   = 0.58;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
 
 sub init {

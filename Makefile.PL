@@ -6,6 +6,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME      => 'Mail::DKIM',
     VERSION   => "0.58",
+    LICENSE   => "perl_5",
     PREREQ_PM => {
         Crypt::OpenSSL::RSA      => 0.24,
         Digest::SHA              => 0,

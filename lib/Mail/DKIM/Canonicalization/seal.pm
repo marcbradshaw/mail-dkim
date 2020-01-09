@@ -45,6 +45,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::seal;
+# VERSION
+# ABSTRACT: arc seal canonicalization
 use base 'Mail::DKIM::Canonicalization::relaxed';
 use Carp;
 

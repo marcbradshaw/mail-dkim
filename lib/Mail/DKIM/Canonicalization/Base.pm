@@ -11,6 +11,9 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::Base;
+# VERSION
+# ABSTRACT: base class for canonicalization methods
+
 use base 'Mail::DKIM::MessageParser';
 use Carp;
 
@@ -74,10 +77,6 @@ sub result {
 1;
 
 __END__
-
-=head1 NAME
-
-Mail::DKIM::Canonicalization::Base - base class for canonicalization methods
 
 =head1 SYNOPSIS
 

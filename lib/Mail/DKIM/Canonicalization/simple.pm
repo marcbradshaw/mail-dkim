@@ -10,6 +10,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::simple;
+# VERSION
+# ABSTRACT: simple canonicalization
 use base 'Mail::DKIM::Canonicalization::DkimCommon';
 use Carp;
 

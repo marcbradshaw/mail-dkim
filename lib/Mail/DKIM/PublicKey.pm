@@ -11,6 +11,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::PublicKey;
+# VERSION
+# ABSTRACT: Represents a DKIM key
 
 use base ( 'Mail::DKIM::KeyValueList', 'Mail::DKIM::Key' );
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;

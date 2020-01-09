@@ -11,6 +11,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Algorithm::rsa_sha256;
+# VERSION
+# ABSTRACT: rsa sha256 algorithm class
 use base 'Mail::DKIM::Algorithm::Base';
 use Carp;
 use MIME::Base64;

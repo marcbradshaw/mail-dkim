@@ -11,6 +11,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Canonicalization::DkimCommon;
+# VERSION
+# ABSTRACT: common canonicalization
 use base 'Mail::DKIM::Canonicalization::Base';
 use Carp;
 

@@ -4,11 +4,9 @@ use strict;
 use warnings;
 
 package Mail::DKIM::TextWrap;
+# VERSION
+# ABSTRACT: text wrapping module written for use with DKIM
 use Carp;
-
-=head1 NAME
-
-Mail::DKIM::TextWrap - text wrapping module written for use with DKIM
 
 =head1 SYNOPSIS (FOR MAIL::DKIM USERS)
 

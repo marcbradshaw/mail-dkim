@@ -10,14 +10,12 @@ use strict;
 use warnings;
 
 package Mail::DKIM::SignerPolicy;
+# VERSION
+# ABSTRACT: determines signing parameters for a message
 
 1;
 
 __END__
-
-=head1 NAME
-
-Mail::DKIM::SignerPolicy - determines signing parameters for a message
 
 =head1 DESCRIPTION
 

@@ -10,10 +10,6 @@
 use strict;
 use warnings;
 
-=head1 NAME
-
-Mail::DKIM::PrivateKey - a private key loaded in memory for DKIM signing
-
 =head1 SYNOPSIS
 
  my $key1 = Mail::DKIM::PrivateKey->load(
@@ -30,6 +26,8 @@ Mail::DKIM::PrivateKey - a private key loaded in memory for DKIM signing
 =cut
 
 package Mail::DKIM::PrivateKey;
+# VERSION
+# ABSTRACT: a private key loaded in memory for DKIM signing
 use base 'Mail::DKIM::Key';
 use Carp;
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;

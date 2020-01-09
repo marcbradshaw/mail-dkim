@@ -14,12 +14,10 @@ use Mail::DKIM::PublicKey;
 use Mail::DKIM::Algorithm::dk_rsa_sha1;
 
 package Mail::DKIM::DkSignature;
+# VERSION
+# ABSTRACT: represents a DomainKeys-Signature header
 use base 'Mail::DKIM::Signature';
 use Carp;
-
-=head1 NAME
-
-Mail::DKIM::DkSignature - represents a DomainKeys-Signature header
 
 =head1 CONSTRUCTORS
 

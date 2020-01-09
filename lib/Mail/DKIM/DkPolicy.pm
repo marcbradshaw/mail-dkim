@@ -11,12 +11,10 @@ use strict;
 use warnings;
 
 package Mail::DKIM::DkPolicy;
+# VERSION
+# ABSTRACT: represents a DomainKeys Sender Signing Policy record
 use base 'Mail::DKIM::Policy';
 use Mail::DKIM::DNS;
-
-=head1 NAME
-
-Mail::DKIM::DkPolicy - represents a DomainKeys Sender Signing Policy record
 
 =head1 DESCRIPTION
 

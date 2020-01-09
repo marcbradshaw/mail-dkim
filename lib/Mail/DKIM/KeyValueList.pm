@@ -11,6 +11,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::KeyValueList;
+# VERSION
+# ABSTRACT: Represents a Key/Value list
 use Carp;
 
 sub new {

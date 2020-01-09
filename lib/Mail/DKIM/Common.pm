@@ -13,9 +13,10 @@ use warnings;
 use Mail::Address;
 
 package Mail::DKIM::Common;
+# VERSION
+# ABSTRACT: Common class for Mail::DKIM
 use base 'Mail::DKIM::MessageParser';
 use Carp;
-our $VERSION = 0.58;
 
 sub new {
     my $class = shift;

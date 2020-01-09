@@ -7,6 +7,8 @@
 # modify it under the same terms as Perl itself.
 
 package Mail::DKIM::Key;
+# ABSTRACT: Represents a DKIM Key
+# VERSION
 
 use strict;
 

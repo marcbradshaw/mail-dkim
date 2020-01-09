@@ -13,10 +13,6 @@ use warnings;
 use Mail::DKIM::PrivateKey;
 use Mail::DKIM::Signature;
 
-=head1 NAME
-
-Mail::DKIM::Signer - generates a DKIM signature for a message
-
 =head1 SYNOPSIS
 
   use Mail::DKIM::Signer;
@@ -143,9 +139,11 @@ The list of headers signed by default is as follows
 =cut
 
 package Mail::DKIM::Signer;
+# VERSION
+# ABSTRACT: generates a DKIM signature for a message
+
 use base 'Mail::DKIM::Common';
 use Carp;
-our $VERSION = 0.58;
 
 # PROPERTIES
 #

@@ -11,6 +11,8 @@ use strict;
 use warnings;
 
 package Mail::DKIM::MessageParser;
+# VERSION
+# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 use Carp;
 
 sub new_object {

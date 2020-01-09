@@ -10,11 +10,9 @@ use strict;
 use warnings;
 
 package Mail::DKIM::ARC::Seal;
+# VERSION
+# ABSTRACT: represents a ARC-Seal header
 use base 'Mail::DKIM::ARC::MessageSignature';
-
-=head1 NAME
-
-Mail::DKIM::ARC::Seal - represents a ARC-Seal header
 
 =head1 CONSTRUCTORS
 

@@ -15,12 +15,10 @@ use Mail::DKIM::Algorithm::rsa_sha1;
 use Mail::DKIM::Algorithm::rsa_sha256;
 
 package Mail::DKIM::Signature;
+# VERSION
+# ABSTRACT: represents a DKIM-Signature header
 use base 'Mail::DKIM::KeyValueList';
 use Carp;
-
-=head1 NAME
-
-Mail::DKIM::Signature - represents a DKIM-Signature header
 
 =head1 CONSTRUCTORS
 

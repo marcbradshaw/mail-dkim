@@ -9,10 +9,6 @@
 use strict;
 use warnings;
 
-=head1 NAME
-
-Mail::DKIM::ARC::Verifier - verifies an ARC-Sealed message
-
 =head1 SYNOPSIS
 
   use Mail::DKIM::ARC::Verifier;
@@ -112,12 +108,13 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 =cut
 
 package Mail::DKIM::ARC::Verifier;
+# VERSION
+# ABSTRACT: verifies an ARC-Sealed message
 use base 'Mail::DKIM::Common';
 use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;
 use Mail::Address;
 use Carp;
-our $VERSION                   = 0.58;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
 
 sub init {

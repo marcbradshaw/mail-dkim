@@ -10,14 +10,10 @@ use strict;
 use warnings;
 
 package Mail::DKIM::ARC::MessageSignature;
+# VERSION
+# ABSTRACT: Subclass of Mail::DKIM::Signature which represents a ARC-Message-Signature header
 use base 'Mail::DKIM::Signature';
 use Carp;
-
-=head1 NAME
-
-Mail::DKIM::ARC::Signature - represents a ARC-Message-Signature header
-
-This is a subclass of Mail::DKIM::Signature
 
 =head1 CONSTRUCTORS
 

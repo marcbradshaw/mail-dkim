@@ -11,15 +11,13 @@ use strict;
 use warnings;
 
 package Mail::DKIM::AuthorDomainPolicy;
+# VERSION
+# ABSTRACT: represents an Author Domain Signing Practices (ADSP) record
 use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()
 
 use Mail::DKIM::DNS;
-
-=head1 NAME
-
-Mail::DKIM::AuthorDomainPolicy - represents an Author Domain Signing Practices (ADSP) record
 
 =head1 DESCRIPTION
 

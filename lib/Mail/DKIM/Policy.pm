@@ -11,12 +11,10 @@ use strict;
 use warnings;
 
 package Mail::DKIM::Policy;
+# VERSION
+# ABSTRACT: abstract base class for originator "signing" policies
 
 use Mail::DKIM::DNS;
-
-=head1 NAME
-
-Mail::DKIM::Policy - abstract base class for originator "signing" policies
 
 =head1 SYNOPSIS
 

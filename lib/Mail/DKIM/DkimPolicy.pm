@@ -11,15 +11,13 @@ use strict;
 use warnings;
 
 package Mail::DKIM::DkimPolicy;
+# VERSION
+# ABSTRACT: represents a DKIM Sender Signing Practices record
 use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()
 
 use Mail::DKIM::DNS;
-
-=head1 NAME
-
-Mail::DKIM::DkimPolicy - represents a DKIM Sender Signing Practices record
 
 =head1 DESCRIPTION
 

@@ -6,16 +6,13 @@ use warnings;
 #require 5.010;
 
 package Mail::DKIM;
-our $VERSION = 0.58;
+# VERSION
+# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 our $SORTTAGS = 0;
 
 1;
 __END__
-
-=head1 NAME
-
-Mail::DKIM - Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 =head1 SYNOPSIS
 

@@ -16,6 +16,9 @@ use Mail::DKIM::Canonicalization::simple;
 use Mail::DKIM::Canonicalization::seal;
 
 package Mail::DKIM::Algorithm::Base;
+# VERSION
+# ABSTRACT: base class for DKIM "algorithms"
+
 use Carp;
 use MIME::Base64;
 
@@ -74,10 +77,6 @@ sub get_canonicalization_class {
       :                        die "unknown method $method\n";
     return $class;
 }
-
-=head1 NAME
-
-Mail::DKIM::Algorithm::Base - base class for DKIM "algorithms"
 
 =head1 SYNOPSIS
 

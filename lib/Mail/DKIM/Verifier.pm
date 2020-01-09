@@ -14,10 +14,6 @@ use Mail::DKIM::Signature;
 use Mail::DKIM::DkSignature;
 use Mail::Address;
 
-=head1 NAME
-
-Mail::DKIM::Verifier - verifies a DKIM-signed message
-
 =head1 SYNOPSIS
 
   use Mail::DKIM::Verifier;
@@ -113,9 +109,10 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 =cut
 
 package Mail::DKIM::Verifier;
+# VERSION
+# ABSTRACT: verifies a DKIM-signed message
 use base 'Mail::DKIM::Common';
 use Carp;
-our $VERSION                   = 0.58;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
 
 sub init {

@@ -6,10 +6,6 @@
 use strict;
 use warnings;
 
-=head1 NAME
-
-Mail::DKIM::DNS - performs DNS queries for Mail::DKIM
-
 =head1 DESCRIPTION
 
 This is the module that performs DNS queries for L<Mail::DKIM>.
@@ -67,6 +63,8 @@ resolver, the EDNS0 feature should be specifically tested before enabling.
 # asynchronous DNS queries.
 
 package Mail::DKIM::DNS;
+# VERSION
+# ABSTRACT: performs DNS queries for Mail::DKIM
 use Net::DNS;
 our $TIMEOUT = 10;
 our $RESOLVER;

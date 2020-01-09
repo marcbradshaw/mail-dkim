@@ -1,13 +1,14 @@
-#!/usr/bin/perl
+package Mail::DKIM::ARC::Verifier;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: verifies an ARC-Sealed message
 
 # Copyright 2017 FastMail Pty Ltd.  All Rights Reserved.
 # Bron Gondwana <brong@fastmailteam.com>
 
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-use strict;
-use warnings;
 
 =head1 SYNOPSIS
 
@@ -107,9 +108,6 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 
 =cut
 
-package Mail::DKIM::ARC::Verifier;
-# VERSION
-# ABSTRACT: verifies an ARC-Sealed message
 use base 'Mail::DKIM::Common';
 use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;

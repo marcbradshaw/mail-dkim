@@ -1,16 +1,14 @@
-#!/usr/bin/perl
-#
+package Mail::DKIM::Key;
+use strict;
+use warnings;
+# ABSTRACT: Represents a DKIM Key
+# VERSION
+
 # Copyright 2006 Jason Long. All rights reserved.
 #
 # Copyright (c) 2004 Anthony D. Urso. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-package Mail::DKIM::Key;
-# ABSTRACT: Represents a DKIM Key
-# VERSION
-
-use strict;
 
 sub cork {
     my $self = shift;

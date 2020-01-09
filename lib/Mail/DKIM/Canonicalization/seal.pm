@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Canonicalization::seal;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: arc seal canonicalization
 
 # Copyright 2017 FastMail Pty Ltd. All Rights Reserved.
 # Bron Gondwana <brong@fastmailteam.com>
@@ -41,12 +45,6 @@
 #   Note: Typically header field sets appear within the header in
 #   descending instance order.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::Canonicalization::seal;
-# VERSION
-# ABSTRACT: arc seal canonicalization
 use base 'Mail::DKIM::Canonicalization::relaxed';
 use Carp;
 

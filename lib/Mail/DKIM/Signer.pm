@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Signer;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: generates a DKIM signature for a message
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -6,9 +10,6 @@
 # Copyright (c) 2004 Anthony D. Urso. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-use strict;
-use warnings;
 
 use Mail::DKIM::PrivateKey;
 use Mail::DKIM::Signature;
@@ -137,10 +138,6 @@ The list of headers signed by default is as follows
 =back
 
 =cut
-
-package Mail::DKIM::Signer;
-# VERSION
-# ABSTRACT: generates a DKIM signature for a message
 
 use base 'Mail::DKIM::Common';
 use Carp;

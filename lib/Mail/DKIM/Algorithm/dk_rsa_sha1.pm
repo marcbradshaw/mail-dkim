@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Algorithm::dk_rsa_sha1;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Base algorithm class
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,15 +11,9 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::DKIM::Canonicalization::dk_simple;
 use Mail::DKIM::Canonicalization::dk_nofws;
 
-package Mail::DKIM::Algorithm::dk_rsa_sha1;
-# VERSION
-# ABSTRACT: Base algorithm class
 use base 'Mail::DKIM::Algorithm::Base';
 use Carp;
 use MIME::Base64;

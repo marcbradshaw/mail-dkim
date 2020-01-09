@@ -1,13 +1,11 @@
-#!/usr/bin/perl
-
+package Mail::DKIM;
 use strict;
 use warnings;
+# VERSION
+# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 #require 5.010;
 
-package Mail::DKIM;
-# VERSION
-# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 our $SORTTAGS = 0;
 

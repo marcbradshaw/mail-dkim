@@ -1,11 +1,9 @@
-#!/usr/bin/perl
-
+package Mail::DKIM::TextWrap;
 use strict;
 use warnings;
-
-package Mail::DKIM::TextWrap;
 # VERSION
 # ABSTRACT: text wrapping module written for use with DKIM
+
 use Carp;
 
 =head1 SYNOPSIS (FOR MAIL::DKIM USERS)

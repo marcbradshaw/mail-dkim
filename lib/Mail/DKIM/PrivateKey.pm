@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::PrivateKey;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: a private key loaded in memory for DKIM signing
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -6,9 +10,6 @@
 # Copyright (c) 2004 Anthony D. Urso. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-use strict;
-use warnings;
 
 =head1 SYNOPSIS
 
@@ -25,9 +26,6 @@ use warnings;
 
 =cut
 
-package Mail::DKIM::PrivateKey;
-# VERSION
-# ABSTRACT: a private key loaded in memory for DKIM signing
 use base 'Mail::DKIM::Key';
 use Carp;
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;

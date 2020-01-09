@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Algorithm::Base;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: base class for DKIM "algorithms"
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,17 +11,10 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::DKIM::Canonicalization::nowsp;
 use Mail::DKIM::Canonicalization::relaxed;
 use Mail::DKIM::Canonicalization::simple;
 use Mail::DKIM::Canonicalization::seal;
-
-package Mail::DKIM::Algorithm::Base;
-# VERSION
-# ABSTRACT: base class for DKIM "algorithms"
 
 use Carp;
 use MIME::Base64;

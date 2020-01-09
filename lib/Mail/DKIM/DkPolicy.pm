@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::DkPolicy;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: represents a DomainKeys Sender Signing Policy record
 
 # Copyright 2005-2009 Messiah College.
 # Jason Long <jlong@messiah.edu>
@@ -7,12 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::DkPolicy;
-# VERSION
-# ABSTRACT: represents a DomainKeys Sender Signing Policy record
 use base 'Mail::DKIM::Policy';
 use Mail::DKIM::DNS;
 

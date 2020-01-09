@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::DkSignature;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: represents a DomainKeys-Signature header
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,15 +11,9 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::DKIM::PublicKey;
 use Mail::DKIM::Algorithm::dk_rsa_sha1;
 
-package Mail::DKIM::DkSignature;
-# VERSION
-# ABSTRACT: represents a DomainKeys-Signature header
 use base 'Mail::DKIM::Signature';
 use Carp;
 

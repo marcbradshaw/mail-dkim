@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Canonicalization::DkCommon;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: dk common canonicalization
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -6,12 +10,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::Canonicalization::DkCommon;
-# VERSION
-# ABSTRACT: dk common canonicalization
 use base 'Mail::DKIM::Canonicalization::Base';
 use Carp;
 

@@ -1,10 +1,11 @@
-#!/usr/bin/perl
+package Mail::DKIM::DNS;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: performs DNS queries for Mail::DKIM
 
 # Copyright 2007, 2012 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
-
-use strict;
-use warnings;
 
 =head1 DESCRIPTION
 
@@ -62,9 +63,6 @@ resolver, the EDNS0 feature should be specifically tested before enabling.
 # Hopefully some day it will have a method to perform
 # asynchronous DNS queries.
 
-package Mail::DKIM::DNS;
-# VERSION
-# ABSTRACT: performs DNS queries for Mail::DKIM
 use Net::DNS;
 our $TIMEOUT = 10;
 our $RESOLVER;

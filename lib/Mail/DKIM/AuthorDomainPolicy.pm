@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::AuthorDomainPolicy;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: represents an Author Domain Signing Practices (ADSP) record
 
 # Copyright 2005-2009 Messiah College.
 # Jason Long <jlong@messiah.edu>
@@ -7,12 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::AuthorDomainPolicy;
-# VERSION
-# ABSTRACT: represents an Author Domain Signing Practices (ADSP) record
 use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()

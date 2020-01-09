@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Algorithm::rsa_sha1;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: rsa sha1 algorithm class
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,12 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::Algorithm::rsa_sha1;
-# VERSION
-# ABSTRACT: rsa sha1 algorithm class
 use base 'Mail::DKIM::Algorithm::Base';
 use Carp;
 use MIME::Base64;

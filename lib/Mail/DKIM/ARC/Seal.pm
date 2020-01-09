@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::ARC::Seal;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: represents a ARC-Seal header
 
 # Copyright 2017 FastMail Pty Ltd. All Rights Reserved.
 # Bron Gondwana <brong@fastmailteam.com>
@@ -6,12 +10,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::ARC::Seal;
-# VERSION
-# ABSTRACT: represents a ARC-Seal header
 use base 'Mail::DKIM::ARC::MessageSignature';
 
 =head1 CONSTRUCTORS

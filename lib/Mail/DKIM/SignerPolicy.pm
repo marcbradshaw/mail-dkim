@@ -1,17 +1,14 @@
-#!/usr/bin/perl
+package Mail::DKIM::SignerPolicy;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: determines signing parameters for a message
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 #
 # Written by Jason Long <jlong@messiah.edu>
-
-use strict;
-use warnings;
-
-package Mail::DKIM::SignerPolicy;
-# VERSION
-# ABSTRACT: determines signing parameters for a message
 
 1;
 

@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Policy;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: abstract base class for originator "signing" policies
 
 # Copyright 2005-2007 Messiah College.
 # Jason Long <jlong@messiah.edu>
@@ -6,13 +10,6 @@
 # Copyright (c) 2004 Anthony D. Urso. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-use strict;
-use warnings;
-
-package Mail::DKIM::Policy;
-# VERSION
-# ABSTRACT: abstract base class for originator "signing" policies
 
 use Mail::DKIM::DNS;
 

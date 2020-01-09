@@ -182,6 +182,9 @@ sub query {
             }
         }
     }
+    if ( $rslv->errorstring eq 'NOERROR' ) {
+        return;
+    }
     die 'DNS error: ' . $rslv->errorstring . "\n";
 }
 

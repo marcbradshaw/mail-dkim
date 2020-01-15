@@ -222,17 +222,3 @@ sub query_async {
 }
 
 1;
-
-=head1 AUTHOR
-
-Jason Long, E<lt>jlong@messiah.eduE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2007, 2012-2013 by Messiah College
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
-
-=cut

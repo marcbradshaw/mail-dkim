@@ -185,6 +185,9 @@ sub query {
     if ( $rslv->errorstring eq 'NOERROR' ) {
         return;
     }
+    if ( $rslv->errorstring =~ /\bno error\b/ ) {
+        return;
+    }
     die 'DNS error: ' . $rslv->errorstring . "\n";
 }
 

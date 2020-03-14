@@ -21,6 +21,8 @@ before_install:
   - coverage-setup
 install:
   - cpanm --quiet --notest Net::DNS@1.17 # for 5.8 travis builds
+  - dzil authordeps --missing | cpanm --quiet --notest
+  - dzil listdeps --missing | cpanm --quiet --notest
   - cpan-install --deps       # installs prereqs, including recommends
   - cpan-install --coverage   # installs converage prereqs, if enabled
 after_success:

@@ -31,7 +31,7 @@ install:
   - cpanm --quiet --notest Net::DNS@1.17 # for 5.8 travis builds
   - dzil authordeps --missing | cpanm --quiet --notest
   - dzil listdeps --missing | cpanm --quiet --notest
-  - cpanm --notest Pod::Weaver::Section::GenerateSection
+  - cpanm --notest Pod::Weaver::Section::GenerateSection Pod::Weaver::Section::Contributors
   - cpan-install --coverage
 
 script:

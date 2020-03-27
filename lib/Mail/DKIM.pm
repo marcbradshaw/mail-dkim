@@ -1,21 +1,16 @@
-#!/usr/bin/perl
-
+package Mail::DKIM;
 use strict;
 use warnings;
+# VERSION
+# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 #require 5.010;
 
-package Mail::DKIM;
-our $VERSION = 0.58;
 
 our $SORTTAGS = 0;
 
 1;
 __END__
-
-=head1 NAME
-
-Mail::DKIM - Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 =head1 SYNOPSIS
 
@@ -96,30 +91,5 @@ Please report bugs to the CPAN RT, or github issue tracker.
 https://rt.cpan.org/Public/Dist/Display.html?Name=Mail-DKIM
 
 https://github.com/fastmail/mail-dkim/issues
-
-=head1 AUTHOR
-
-Jason Long E<lt>jlong@messiah.eduE<gt>
-
-=head1 CONTRIBUTORS
-
-Marc Bradshaw E<lt>marc@marcbradshaw.netE<gt>,
-Bron Gondwana E<lt>brong@fastmailteam.comE<gt>,
-John Levine E<lt>john.levine@standcore.comE<gt>
-
-=head1 THANKS
-
-Work on ensuring that this module passes the ARC test suite was
-generously sponsored by Valimail (https://www.valimail.com/)
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2007, 2009 by Messiah College
-Copyright (C) 2017 by FastMail Pty Ltd
-Copyright (C) 2017 by Standcore LLC
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut

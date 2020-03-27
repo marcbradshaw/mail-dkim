@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Verifier;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: verifies a DKIM-signed message
 
 # Copyright 2005-2009 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,16 +11,9 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::DKIM::Signature;
 use Mail::DKIM::DkSignature;
 use Mail::Address;
-
-=head1 NAME
-
-Mail::DKIM::Verifier - verifies a DKIM-signed message
 
 =head1 SYNOPSIS
 
@@ -112,10 +109,8 @@ If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 
 =cut
 
-package Mail::DKIM::Verifier;
 use base 'Mail::DKIM::Common';
 use Carp;
-our $VERSION                   = 0.58;
 our $MAX_SIGNATURES_TO_PROCESS = 50;
 
 sub init {
@@ -852,19 +847,5 @@ sub signatures {
 
     return @{ $self->{signatures} };
 }
-
-=head1 AUTHOR
-
-Jason Long, E<lt>jlong@messiah.eduE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2009 by Messiah College
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
-
-=cut
 
 1;

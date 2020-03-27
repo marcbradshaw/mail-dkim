@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::MessageParser;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Signs/verifies Internet mail with DKIM/DomainKey signatures
 
 # Copyright 2005 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,10 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::MessageParser;
 use Carp;
 
 sub new_object {

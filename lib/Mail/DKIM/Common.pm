@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Common;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Common class for Mail::DKIM
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,15 +11,10 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::Address;
 
-package Mail::DKIM::Common;
 use base 'Mail::DKIM::MessageParser';
 use Carp;
-our $VERSION = 0.58;
 
 sub new {
     my $class = shift;

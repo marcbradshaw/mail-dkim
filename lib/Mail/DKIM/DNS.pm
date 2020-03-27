@@ -1,14 +1,11 @@
-#!/usr/bin/perl
+package Mail::DKIM::DNS;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: performs DNS queries for Mail::DKIM
 
 # Copyright 2007, 2012 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
-
-use strict;
-use warnings;
-
-=head1 NAME
-
-Mail::DKIM::DNS - performs DNS queries for Mail::DKIM
 
 =head1 DESCRIPTION
 
@@ -66,7 +63,6 @@ resolver, the EDNS0 feature should be specifically tested before enabling.
 # Hopefully some day it will have a method to perform
 # asynchronous DNS queries.
 
-package Mail::DKIM::DNS;
 use Net::DNS;
 our $TIMEOUT = 10;
 our $RESOLVER;
@@ -226,17 +222,3 @@ sub query_async {
 }
 
 1;
-
-=head1 AUTHOR
-
-Jason Long, E<lt>jlong@messiah.eduE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2007, 2012-2013 by Messiah College
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
-
-=cut

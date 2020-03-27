@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::ARC::MessageSignature;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Subclass of Mail::DKIM::Signature which represents a ARC-Message-Signature header
 
 # Copyright 2017 FastMail Pty Ltd. All Rights Reserved.
 # Bron Gondwana <brong@fastmailteam.com>
@@ -6,18 +10,8 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::ARC::MessageSignature;
 use base 'Mail::DKIM::Signature';
 use Carp;
-
-=head1 NAME
-
-Mail::DKIM::ARC::Signature - represents a ARC-Message-Signature header
-
-This is a subclass of Mail::DKIM::Signature
 
 =head1 CONSTRUCTORS
 
@@ -97,18 +91,6 @@ sub instance {
 =head1 SEE ALSO
 
 L<Mail::DKIM::Signature> for DKIM-Signature headers
-
-=head1 AUTHOR
-
-Bron Gondwana, E<lt>brong@fastmailteam.comE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2017 by FastMail Pty Ltd
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut
 

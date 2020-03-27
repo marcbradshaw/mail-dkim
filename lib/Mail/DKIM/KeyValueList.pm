@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::KeyValueList;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Represents a Key/Value list
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,10 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::KeyValueList;
 use Carp;
 
 sub new {

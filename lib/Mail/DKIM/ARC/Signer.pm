@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::ARC::Signer;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: generates a DKIM signature for a message
 
 # Copyright 2017 FastMail Pty Ltd.  All Rights Reserved.
 # Bron Gondwana <brong@fastmailteam.com>
@@ -6,18 +10,11 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
 use Mail::DKIM::PrivateKey;
 use Mail::DKIM::ARC::MessageSignature;
 use Mail::DKIM::ARC::Seal;
 use Mail::AuthenticationResults::Parser;
 use Mail::AuthenticationResults::Header::AuthServID;
-
-=head1 NAME
-
-Mail::DKIM::ARC::Signer - generates a DKIM signature for a message
 
 =head1 SYNOPSIS
 
@@ -156,10 +153,8 @@ The list of headers signed by default is as follows
 
 =cut
 
-package Mail::DKIM::ARC::Signer;
 use base 'Mail::DKIM::Common';
 use Carp;
-our $VERSION = 0.58;
 
 # PROPERTIES
 #
@@ -920,19 +915,5 @@ sub as_strings {
     my $self = shift;
     return ( $self->{_AS}, $self->{_AMS}, $self->{_AAR} );
 }
-
-=head1 AUTHOR
-
-Bron Gondwana, E<lt>brong@fastmailteam.comE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2017 FastMail Pty Ltd
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
-
-=cut
 
 1;

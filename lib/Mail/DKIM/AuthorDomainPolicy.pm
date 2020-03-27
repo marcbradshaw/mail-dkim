@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::AuthorDomainPolicy;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: represents an Author Domain Signing Practices (ADSP) record
 
 # Copyright 2005-2009 Messiah College.
 # Jason Long <jlong@messiah.edu>
@@ -7,19 +11,11 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::AuthorDomainPolicy;
 use base 'Mail::DKIM::Policy';
 
 # base class is used for parse(), as_string()
 
 use Mail::DKIM::DNS;
-
-=head1 NAME
-
-Mail::DKIM::AuthorDomainPolicy - represents an Author Domain Signing Practices (ADSP) record
 
 =head1 DESCRIPTION
 
@@ -357,17 +353,5 @@ _adsp._domainkey.example.org is nonexistent, but it should
 not be treated the same as example.org being nonexistent.
 
 =back
-
-=head1 AUTHOR
-
-Jason Long, E<lt>jlong@messiah.eduE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2009 by Messiah College
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut

@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::Canonicalization::Base;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: base class for canonicalization methods
 
 # Copyright 2005-2007 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -7,10 +11,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
-use strict;
-use warnings;
-
-package Mail::DKIM::Canonicalization::Base;
 use base 'Mail::DKIM::MessageParser';
 use Carp;
 
@@ -74,10 +74,6 @@ sub result {
 1;
 
 __END__
-
-=head1 NAME
-
-Mail::DKIM::Canonicalization::Base - base class for canonicalization methods
 
 =head1 SYNOPSIS
 
@@ -175,17 +171,5 @@ itself, and can be accessed using this method.
 =head1 SEE ALSO
 
 L<Mail::DKIM>
-
-=head1 AUTHOR
-
-Jason Long, E<lt>jlong@messiah.eduE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006-2007 by Messiah College
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
 
 =cut

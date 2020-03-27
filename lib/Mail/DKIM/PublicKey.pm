@@ -1,4 +1,8 @@
-#!/usr/bin/perl
+package Mail::DKIM::PublicKey;
+use strict;
+use warnings;
+# VERSION
+# ABSTRACT: Represents a DKIM key
 
 # Copyright 2005 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>
@@ -6,11 +10,6 @@
 # Copyright (c) 2004 Anthony D. Urso. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
-
-use strict;
-use warnings;
-
-package Mail::DKIM::PublicKey;
 
 use base ( 'Mail::DKIM::KeyValueList', 'Mail::DKIM::Key' );
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;

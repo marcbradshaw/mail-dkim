@@ -242,11 +242,16 @@ sub finish_header {
     my @as;
 
     my $ar;
+    HEADER:
     foreach my $header ( @{ $self->{headers} } ) {
         $header =~ s/[\r\n]+$//;
         if ( $header =~ m/^Authentication-Results:/ ) {
             my ( $arval ) = $header =~ m/^Authentication-Results:[^;]*;\s*(.*)/is;
-            my $parsed = Mail::AuthenticationResults::Parser->new->parse( $header );
+            my $parsed = eval{ Mail::AuthenticationResults::Parser->new->parse( $header ) };
+            if ( my $error = $@ ) {
+              warn "Authentication-Results Header parse error: $error\n$header";
+              next HEADER;
+            }
             my $ardom = $parsed->value->value;
 
             next

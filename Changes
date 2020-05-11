@@ -1,6 +1,7 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+  * ARC: When sealing, don't die on an unparsable Authentication-Results header.
 
 0.58
 

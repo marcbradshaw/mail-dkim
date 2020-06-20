@@ -54,9 +54,11 @@ sub fetch {
     my $class = shift;
     my %prms  = @_;
 
-    my $self = eval {
+    my $self;
+    my $had_error= not eval {
         local $SIG{__DIE__};
-        $class->SUPER::fetch(%prms);
+        $self= $class->SUPER::fetch(%prms);
+	1
     };
     my $E = $@;
 
@@ -83,7 +85,7 @@ sub fetch {
         }
     }
 
-    die $E if $E;
+    die $E if $had_error;
     return $self;
 }
 

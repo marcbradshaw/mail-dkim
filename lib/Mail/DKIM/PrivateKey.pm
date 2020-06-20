@@ -117,11 +117,11 @@ sub convert {
     eval {
         local $SIG{__DIE__};
         $cork = new_private_key Crypt::OpenSSL::RSA($pkcs);
+	1
+    } || do {
+	$self->errorstr($@);
+	return;
     };
-
-    $@
-      and $self->errorstr($@),
-      return;
 
     $cork
       or return;

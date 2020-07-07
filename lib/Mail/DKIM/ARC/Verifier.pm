@@ -154,8 +154,8 @@ sub handle_header {
             local $SIG{__DIE__};
             my $signature = Mail::DKIM::ARC::MessageSignature->parse($line);
             $self->add_signature($signature);
-        };
-        if ($@) {
+	    1
+        } || do {
 
             # the only reason an error should be thrown is if the
             # signature really is unparse-able
@@ -164,7 +164,7 @@ sub handle_header {
 
             chomp( my $E = $@ );
             $self->{signature_reject_reason} = $E;
-        }
+        };
     }
 
     if ( lc($field_name) eq 'arc-seal' ) {
@@ -172,8 +172,8 @@ sub handle_header {
             local $SIG{__DIE__};
             my $signature = Mail::DKIM::ARC::Seal->parse($line);
             $self->add_signature($signature);
-        };
-        if ($@) {
+	    1
+        } || do {
 
             # the only reason an error should be thrown is if the
             # signature really is unparse-able
@@ -182,7 +182,7 @@ sub handle_header {
 
             chomp( my $E = $@ );
             $self->{signature_reject_reason} = $E;
-        }
+        };
     }
 
 }
@@ -413,12 +413,12 @@ sub check_public_key {
         #                $signature->instance, $empty_g_means_wildcard);
 
         die $@ if $@;
-    };
-    if ($@) {
+	1
+    } || do {
         my $E = $@;
         chomp $E;
         $self->{signature_reject_reason} = "public key: $E";
-    }
+    };
     return $result;
 }
 
@@ -513,13 +513,13 @@ sub _check_and_verify_signature {
     eval {
         local $SIG{__DIE__};
         $pkey = $signature->get_public_key;
-    };
-    if ($@) {
+	1
+    } || do  {
         my $E = $@;
         chomp $E;
         $self->{signature_reject_reason} = "public key: $E";
         return ( 'invalid', $self->{signature_reject_reason} );
-    }
+    };
 
     unless ( $self->check_public_key( $signature, $pkey ) ) {
         return ( 'invalid', $self->{signature_reject_reason} );
@@ -540,8 +540,8 @@ sub _check_and_verify_signature {
         local $SIG{__DIE__};
         $result = $algorithm->verify() ? 'pass' : 'fail';
         $details = $algorithm->{verification_details} || $@;
-    };
-    if ($@) {
+	1
+    } || do {
 
         # see also add_signature
         chomp( my $E = $@ );
@@ -553,7 +553,7 @@ sub _check_and_verify_signature {
         }
         $result  = 'fail';
         $details = $E;
-    }
+    };
     return ( $result, $details );
 }
 

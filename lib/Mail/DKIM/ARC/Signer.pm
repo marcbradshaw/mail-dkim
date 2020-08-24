@@ -335,6 +335,8 @@ sub finish_header {
         return;
     }
 
+    $self->{Chain} = 'none' if ($self->{Chain} eq 'ar');
+
     if ( $#ams > $#as ) {
         $self->{result}        = 'skipped';
         $self->{details} = 'More message signatures than seals';

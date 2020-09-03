@@ -246,7 +246,7 @@ sub finish_header {
     foreach my $header ( @{ $self->{headers} } ) {
         $header =~ s/[\r\n]+$//;
         if ( $header =~ m/^Authentication-Results:/ ) {
-            my ( $arval ) = $header =~ m/^Authentication-Results:[^;]*;\s*(.*)/is;
+            my ( $arval ) = $header =~ m/^Authentication-Results:[^;]*;[\t ]*(.*)/is;
             my $parsed;
 	    eval {
 		$parsed= Mail::AuthenticationResults::Parser->new
@@ -263,11 +263,13 @@ sub finish_header {
               unless "\L$ardom" eq $self->{SrvId};   # make sure it's our domain
 
             $arval =~ s/;?\s*$//;    # ignore trailing semicolon and whitespace
+            # preserve leading fold if there is one, otherwise set one leading space
+            $arval =~ s/^\s*/ / unless ($arval =~ m/^\015\012/);
             if ($ar) {
-                $ar .= "; $arval";
+                $ar .= ";$arval";
             }
             else {
-                $ar = "$ardom; $arval";
+                $ar = "$ardom;$arval";
             }
 
             # get chain value from A-R header

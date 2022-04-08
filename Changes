@@ -1,6 +1,7 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+  + Add support for signatures with an Expiration value
 
 1.20200907 2020-09-07 UTC
   * ARC::Signer: Preserve leading fold from AR (if any) when copying to AAR.

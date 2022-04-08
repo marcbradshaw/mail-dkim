@@ -58,10 +58,10 @@ $verifier->PRINT($signed_email);
 $verifier->CLOSE;
 is( $verifier->result, 'pass', 'Signature passes');
 
-my $timestamp = time-86400;
-my $expiration = $timestamp + 3600;
-my $signed_email = generate_signed_email($timestamp,$expiration);
-my $verifier = Mail::DKIM::Verifier->new();
+$timestamp = time-86400;
+$expiration = $timestamp + 3600;
+$signed_email = generate_signed_email($timestamp,$expiration);
+$verifier = Mail::DKIM::Verifier->new();
 $verifier->PRINT($signed_email);
 $verifier->CLOSE;
 isnt( $verifier->result, 'pass', 'Expired Signature does not pass');

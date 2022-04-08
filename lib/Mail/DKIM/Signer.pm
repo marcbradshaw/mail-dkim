@@ -93,7 +93,7 @@ The "default policy" is to create a DKIM signature using the specified
 parameters, but only if the message's sender matches the domain.
 The following parameters can be passed to this new() method to
 influence the resulting signature:
-Algorithm, Method, Domain, Selector, KeyFile, Identity, Timestamp.
+Algorithm, Method, Domain, Selector, KeyFile, Identity, Timestamp, Expiration.
 
 If you want different behavior, you can provide a "signer policy"
 instead. A signer policy is a subroutine or class that determines
@@ -271,6 +271,10 @@ sub finish_header {
                 ),
                 (
                     $self->{'Timestamp'} ? ( Timestamp => $self->{'Timestamp'} )
+                    : ()
+                ),
+                (
+                    $self->{'Expiration'} ? ( Expiration => $self->{'Expiration'} )
                     : ()
                 ),
             )

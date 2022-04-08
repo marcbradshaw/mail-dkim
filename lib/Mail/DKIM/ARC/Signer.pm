@@ -383,6 +383,7 @@ sub finish_header {
             Key       => $self->{Key},
             KeyFile   => $self->{KeyFile},
             ( $self->{Timestamp} ? ( Timestamp => $self->{Timestamp} ) : () ),
+            ( $self->{Expiration} ? ( Expiration => $self->{Expiration} ) : () ),
         )
     );
 
@@ -448,6 +449,7 @@ sub finish_body {
             Key       => $self->{Key},
             KeyFile   => $self->{KeyFile},
             ( $self->{Timestamp} ? ( Timestamp => $self->{Timestamp} ) : () ),
+            ( $self->{Expiration} ? ( Expiration => $self->{Expiration} ) : () ),
         )
     );
 

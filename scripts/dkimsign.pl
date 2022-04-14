@@ -16,7 +16,7 @@ use Pod::Usage;
 
 my $type = "dkim";
 my $selector = "selector1";
-my $algorithm = "rsa-sha1";
+my $algorithm = "rsa-sha256";
 my $method = "simple";
 my $domain; # undef => auto-select domain
 my $expiration;

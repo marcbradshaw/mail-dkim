@@ -17,7 +17,7 @@ use Pod::Usage;
 my ($opt, $usage) = describe_options(
   "%c %o < original_email.txt",
   [ "type=s" => "Determine the desired signature type 'dkim' or 'domainkeys'", {default=>'dkim'} ],
-  [ "algorithm=s" => "Algorithm to sign with", {default=>"sha-256"} ],
+  [ "algorithm=s" => "Algorithm to sign with", {default=>"rsa-sha256"} ],
   [ "method=s" => "Specify the desired canonicalization method, Possible values are simple, simple/simple, simple/relaxed, relaxed, relaxed/relaxed, relaxed/simple", {default=>"simple"} ],
   [ "selector=s" => "Signing selector", {default=>'selector1'} ],
   [ "domain=s" => "Signing domain" ],

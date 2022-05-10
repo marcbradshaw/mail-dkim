@@ -102,7 +102,7 @@ Jason Long, E<lt>jlong@messiah.eduE<gt>
 John Levine, E<lt>john.levine@standcore.comE<gt>
 
 Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
- 
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006-2007 by Messiah College

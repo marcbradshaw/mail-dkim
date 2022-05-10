@@ -86,6 +86,8 @@ dkimverify.pl - verifies DKIM signatures on an email message
 
 Jason Long, E<lt>jlong@messiah.eduE<gt>
 
+Marc Bradshaw, E<lt>marc@marcbradshaw.netE<gt>
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006-2007 by Messiah College

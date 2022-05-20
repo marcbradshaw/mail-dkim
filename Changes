@@ -1,6 +1,8 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+
+1.20220520 2022-05-20 UTC
   + Change default algorithm in dkimsign.pl to sha-256
   + Use Getopt::Long::Descriptive in scripts for better command help
 

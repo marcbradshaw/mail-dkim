@@ -51,7 +51,7 @@ use Mail::AuthenticationResults::Header::AuthServID;
   }
   $signer->CLOSE;
 
-  die 'Failed' $signer->result_details() unless $signer->result() eq 'sealed';
+  die 'Failed' $signer->result_detail() unless $signer->result() eq 'sealed';
 
   # Get all the signature headers to prepend to the message
   # ARC-Seal, ARC-Message-Signature and ARC-Authentication-Results

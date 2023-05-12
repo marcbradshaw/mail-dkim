@@ -25,7 +25,7 @@ sub new {
     $self->{'GRAN'} = $prms{'Granularity'};
     $self->{'NOTE'} = $prms{'Note'};
     $self->{'TEST'} = $prms{'Testing'};
-    #$self->{'TYPE'} = ( $prms{'Type'} or 'rsa' ); # unused
+    $self->{'TYPE'} = ( $prms{'Type'} or 'rsa' );
     $self->{'DATA'} = $prms{'Data'};
 
     bless $self, $type;
@@ -119,7 +119,9 @@ sub fetch_async {
         my $self = $class->parse($strn);
         $self->{Selector} = $prms{'Selector'};
         $self->{Domain}   = $prms{'Domain'};
+        $self->{TYPE}     = ( $self->get_tag('k') or 'rsa' );
         $self->check;
+
         return $on_success->($self);
     };
 
@@ -307,7 +309,7 @@ sub convert {
 
     # Use different libs subject to k= tag.
     # Without k= tag, default to RSA to maintain prior behavior
-    my $k = $self->get_tag('k') || 'rsa';
+    my $k = ( $self->get_tag('k') or 'rsa' );
     if ( $k eq 'rsa' ) {
         use Crypt::OpenSSL::RSA;
     }

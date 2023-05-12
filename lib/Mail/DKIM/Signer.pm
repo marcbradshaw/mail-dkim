@@ -305,6 +305,9 @@ sub finish_body {
         # finished canonicalizing
         $algorithm->finish_body;
 
+        my $type = 'rsa'; # default
+        $type = 'ed25519' if ( $self->{'Algorithm'} =~ /^ed25519/ );
+
         # load the private key file if necessary
         my $signature = $algorithm->signature;
         my $key =
@@ -313,7 +316,8 @@ sub finish_body {
           || $self->{Key}
           || $self->{KeyFile};
         if ( defined($key) && !ref($key) ) {
-            $key = Mail::DKIM::PrivateKey->load( File => $key );
+            $key = Mail::DKIM::PrivateKey->load( File => $key,
+                Type => $type );
         }
         $key
           or die "no key available to sign with\n";

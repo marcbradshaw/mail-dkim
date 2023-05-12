@@ -221,7 +221,7 @@ sub sign_digest {
         return $rsa_priv->decrypt($EM);
 
     }
-    elsif ( $self->{'TYPE'} eq 'ed25519') {
+    elsif ( $self->{'TYPE'} eq 'ed25519' ) {
 
         my $ed = $self->cork;
         if ( !$ed ) {

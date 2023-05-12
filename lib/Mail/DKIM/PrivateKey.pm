@@ -95,42 +95,85 @@ The returned object is of type L<Crypt::OpenSSL::RSA>.
 =cut
 
 sub convert {
-    use Crypt::OpenSSL::RSA;
-
     my $self = shift;
+
+    # Use different libs subject to key type.
+    if ( $self->{'TYPE'} eq 'rsa' ) {
+        use Crypt::OpenSSL::RSA;
+    }
+    elsif ( $self->{'TYPE'} eq 'ed25519' ) {
+        use Crypt::PK::Ed25519;
+    }
 
     $self->data
       or return;
 
-    # have to PKCS1ify the privkey because openssl is too finicky...
-    my $pkcs = "-----BEGIN RSA PRIVATE KEY-----\n";
+    if ( $self->{'TYPE'} eq 'rsa' ) {
 
-    for ( my $i = 0 ; $i < length $self->data ; $i += 64 ) {
-        $pkcs .= substr $self->data, $i, 64;
-        $pkcs .= "\n";
+        # have to PKCS1ify the privkey because openssl is too finicky...
+        my $pkcs = "-----BEGIN RSA PRIVATE KEY-----\n";
+
+        for ( my $i = 0 ; $i < length $self->data ; $i += 64 ) {
+            $pkcs .= substr $self->data, $i, 64;
+            $pkcs .= "\n";
+        }
+
+        $pkcs .= "-----END RSA PRIVATE KEY-----\n";
+
+        my $cork;
+
+        eval {
+            local $SIG{__DIE__};
+            $cork = new_private_key Crypt::OpenSSL::RSA($pkcs);
+        1
+        } || do {
+        $self->errorstr($@);
+        return;
+        };
+
+        $cork
+          or return;
+
+        # segfaults on my machine
+        #	$cork->check_key or
+        #		return;
+
+        $self->cork($cork);
+
     }
+    elsif ( $self->{'TYPE'} eq 'ed25519' ) {
+        my $cork;
 
-    $pkcs .= "-----END RSA PRIVATE KEY-----\n";
+        eval {
+            local $SIG{__DIE__};
+            $cork = new Crypt::PK::Ed25519;
 
-    my $cork;
+            # Prepend/append with PEM boilerplate
+            my $pem = "-----BEGIN ED25519 PRIVATE KEY-----\n";
+            $pem .= $self->data;
+            $pem .= "\n";
+            $pem .= "-----END ED25519 PRIVATE KEY-----\n";
 
-    eval {
-        local $SIG{__DIE__};
-        $cork = new_private_key Crypt::OpenSSL::RSA($pkcs);
-	1
-    } || do {
-	$self->errorstr($@);
-	return;
-    };
+            # Pass PEM text buffer
+            $cork->import_key(\$pem)
+                or die 'failed to load Ed25519 private key';
 
-    $cork
-      or return;
+            # Alternatively, import_raw_key() could be used,
+            # but requires the 32-byte key, which must be extracted
+            # from the ASN.1 structure first.
 
-    # segfaults on my machine
-    #	$cork->check_key or
-    #		return;
+        1
+        } || do {
+            $self->errorstr($@);
+            return;
+        };
 
-    $self->cork($cork);
+        $cork
+          or return;
+
+        $self->cork($cork);
+
+    }
 
     return 1;
 }
@@ -168,12 +211,27 @@ sub sign_digest {
     my $self = shift;
     my ( $digest_algorithm, $digest ) = @_;
 
-    my $rsa_priv = $self->cork;
-    $rsa_priv->use_no_padding;
+    if ( $self->{'TYPE'} eq 'rsa') {
 
-    my $k = $rsa_priv->size;
-    my $EM = calculate_EM( $digest_algorithm, $digest, $k );
-    return $rsa_priv->decrypt($EM);
+        my $rsa_priv = $self->cork;
+        $rsa_priv->use_no_padding;
+
+        my $k = $rsa_priv->size;
+        my $EM = calculate_EM( $digest_algorithm, $digest, $k );
+        return $rsa_priv->decrypt($EM);
+
+    }
+    elsif ( $self->{'TYPE'} eq 'ed25519') {
+
+        my $ed = $self->cork;
+        if ( !$ed ) {
+            $@ = $@ ne '' ? "Ed25519 failed: $@" : 'Ed25519 unknown problem';
+            die;
+        }
+
+        return $ed->sign_message($digest);
+
+    }
 }
 
 =cut

@@ -308,9 +308,10 @@ sub convert {
     # Use different libs subject to k= tag.
     # Without k= tag, default to RSA to maintain prior behavior
     my $k = $self->get_tag('k') || 'rsa';
-    if ($k eq 'rsa') {
+    if ( $k eq 'rsa' ) {
         use Crypt::OpenSSL::RSA;
-    } elsif ($k eq 'ed25519') {
+    }
+    elsif ( $k eq 'ed25519' ) {
         use Crypt::PK::Ed25519;
         use MIME::Base64;
     }
@@ -318,7 +319,7 @@ sub convert {
     $self->data
       or return;
 
-    if ($k eq 'rsa') {
+    if ( $k eq 'rsa' ) {
         # have to PKCS1ify the pubkey because openssl is too finicky...
         my $cert = "-----BEGIN PUBLIC KEY-----\n";
 
@@ -338,7 +339,8 @@ sub convert {
 
         $self->cork($cork);
 
-    } elsif ($k eq 'ed25519') {
+    }
+    elsif ( $k eq 'ed25519' ) {
         my $cork = Crypt::PK::Ed25519->new
           or die 'unable to generate Ed25519 public key object';
 
@@ -528,7 +530,9 @@ sub verify_digest {
 
         $@ = 'bad Ed25519 signature';
         return;
+
     }
+
 }
 
 1;

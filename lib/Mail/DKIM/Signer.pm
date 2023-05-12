@@ -185,16 +185,21 @@ sub init {
     my $self = shift;
     $self->SUPER::init;
 
-    if ( defined $self->{KeyFile} ) {
-        $self->{Key} ||=
-          Mail::DKIM::PrivateKey->load( File => $self->{KeyFile} );
-    }
-
     unless ( $self->{'Algorithm'} ) {
 
         # use default algorithm
         $self->{'Algorithm'} = 'rsa-sha1';
     }
+
+    my $type = 'rsa'; # default
+    $type = 'ed25519' if ( $self->{'Algorithm'} =~ /^ed25519/ );
+
+    if ( defined $self->{KeyFile} ) {
+        $self->{Key} ||=
+          Mail::DKIM::PrivateKey->load( File => $self->{KeyFile},
+            Type => $type );
+    }
+
     unless ( $self->{'Method'} ) {
 
         # use default canonicalization method
@@ -210,6 +215,7 @@ sub init {
         # use default selector
         $self->{'Selector'} = 'unknown';
     }
+
 }
 
 sub finish_header {

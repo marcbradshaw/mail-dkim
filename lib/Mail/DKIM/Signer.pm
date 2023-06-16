@@ -277,6 +277,10 @@ sub finish_header {
                     $self->{'Expiration'} ? ( Expiration => $self->{'Expiration'} )
                     : ()
                 ),
+                (
+                    $self->{'Tags'} ? ( Tags => $self->{'Tags'} )
+                    : ()
+                ),
             )
         );
     }

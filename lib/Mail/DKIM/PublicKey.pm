@@ -14,6 +14,9 @@ use warnings;
 use base ( 'Mail::DKIM::KeyValueList', 'Mail::DKIM::Key' );
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;
 
+use Crypt::OpenSSL::RSA;
+use Crypt::PK::Ed25519;
+use MIME::Base64;
 use Mail::DKIM::DNS;
 
 sub new {
@@ -119,7 +122,7 @@ sub fetch_async {
         my $self = $class->parse($strn);
         $self->{Selector} = $prms{'Selector'};
         $self->{Domain}   = $prms{'Domain'};
-        $self->{TYPE}     = ( $self->get_tag('k') or 'rsa' );
+        $self->{TYPE}     = $self->get_tag('k') || 'rsa';
         $self->check;
 
         return $on_success->($self);
@@ -304,57 +307,54 @@ sub check_hash_algorithm {
 # Create an OpenSSL public key object from the Base64-encoded data
 # found in this public key's DNS record. The OpenSSL object is saved
 # in the "cork" property.
+sub _convert_rsa {
+    my $self = shift;
+    # have to PKCS1ify the pubkey because openssl is too finicky...
+    my $cert = "-----BEGIN PUBLIC KEY-----\n";
+
+    for ( my $i = 0 ; $i < length $self->data ; $i += 64 ) {
+        $cert .= substr $self->data, $i, 64;
+        $cert .= "\n";
+    }
+
+    $cert .= "-----END PUBLIC KEY-----\n";
+
+    my $cork = Crypt::OpenSSL::RSA->new_public_key($cert)
+      or die 'unable to generate public key object';
+
+    # segfaults on my machine
+    #	$cork->check_key or
+    #		return;
+
+    $self->cork($cork);
+    return 1;
+}
+
+sub _convert_ed25519 {
+    my $self = shift;
+    my $cork = Crypt::PK::Ed25519->new
+      or die 'unable to generate Ed25519 public key object';
+
+    my $keybin = decode_base64($self->data);
+    $cork->import_key_raw($keybin, 'public')
+      or die 'failed to load Ed25519 public key';
+
+    $self->cork($cork);
+    return 1;
+}
+
 sub convert {
     my $self = shift;
 
-    # Use different libs subject to k= tag.
-    # Without k= tag, default to RSA to maintain prior behavior
-    my $k = ( $self->get_tag('k') or 'rsa' );
-    if ( $k eq 'rsa' ) {
-        use Crypt::OpenSSL::RSA;
-    }
-    elsif ( $k eq 'ed25519' ) {
-        use Crypt::PK::Ed25519;
-        use MIME::Base64;
-    }
+    my $k_tag = $self->get_tag('k');
+    $k_tag = 'rsa' unless defined $k_tag;
 
     $self->data
       or return;
 
-    if ( $k eq 'rsa' ) {
-        # have to PKCS1ify the pubkey because openssl is too finicky...
-        my $cert = "-----BEGIN PUBLIC KEY-----\n";
-
-        for ( my $i = 0 ; $i < length $self->data ; $i += 64 ) {
-            $cert .= substr $self->data, $i, 64;
-            $cert .= "\n";
-        }
-
-        $cert .= "-----END PUBLIC KEY-----\n";
-
-        my $cork = Crypt::OpenSSL::RSA->new_public_key($cert)
-          or die 'unable to generate public key object';
-
-        # segfaults on my machine
-        #	$cork->check_key or
-        #		return;
-
-        $self->cork($cork);
-
-    }
-    elsif ( $k eq 'ed25519' ) {
-        my $cork = Crypt::PK::Ed25519->new
-          or die 'unable to generate Ed25519 public key object';
-
-        my $keybin = decode_base64($self->data);
-        $cork->import_key_raw($keybin, 'public')
-          or die 'failed to load Ed25519 public key';
-
-        $self->cork($cork);
-
-    }
-
-    return 1;
+    return $self->_convert_rsa if $k_tag eq 'rsa';
+    return $self->_convert_ed25519 if $k_tag eq 'ed25519';
+    die 'unsupported key type';
 }
 
 sub verify {
@@ -474,6 +474,62 @@ sub verify_sha1_digest {
     return $self->verify_digest( 'SHA-1', $digest, $signature );
 }
 
+sub _verify_digest_rsa {
+    my $self = shift;
+    my ( $digest_algorithm, $digest, $signature ) = @_;
+
+    my $rsa_pub = $self->cork;
+    if ( !$rsa_pub ) {
+        $@ = $@ ne '' ? "RSA failed: $@" : 'RSA unknown problem';
+        $@ .= ", s=$self->{Selector} d=$self->{Domain}";
+        return;
+    }
+
+    $rsa_pub->use_no_padding;
+    my $verify_result = $rsa_pub->encrypt($signature);
+
+    my $k = $rsa_pub->size;
+    my $expected = calculate_EM( $digest_algorithm, $digest, $k );
+    return 1 if ( $verify_result eq $expected );
+
+    # well, the RSA verification failed; I wonder if the RSA signing
+    # was performed on a different digest value? I think we can check...
+
+    # basically, if the $verify_result has the same prefix as $expected,
+    # then only the digest was different
+
+    my $digest_len = length $digest;
+    my $prefix_len = length($expected) - $digest_len;
+    if (
+        substr( $verify_result, 0, $prefix_len ) eq
+        substr( $expected,      0, $prefix_len ) )
+    {
+        $@ = 'message has been altered';
+        return;
+    }
+
+    $@ = 'bad RSA signature';
+    return;
+}
+
+sub _verify_digest_ed25519 {
+    my $self = shift;
+    my ( $digest_algorithm, $digest, $signature ) = @_;
+
+    my $ed = $self->cork;
+    if ( !$ed ) {
+        $@ = $@ ne '' ? "Ed25519 failed: $@" : 'Ed25519 unknown problem';
+        $@ .= ", s=$self->{Selector} d=$self->{Domain}";
+        return;
+    }
+
+    my $verify_result = $ed->verify_message($signature, $digest);
+    return $verify_result if ($verify_result == 1);
+
+    $@ = 'bad Ed25519 signature';
+    return;
+}
+
 # verify_digest() - returns true if the digest verifies, false otherwise
 #
 # if false, $@ is set to a description of the problem
@@ -484,57 +540,10 @@ sub verify_digest {
 
     my $k_tag = $self->get_tag('k') || 'rsa';
 
-    if ($k_tag eq 'rsa') {
-        my $rsa_pub = $self->cork;
-        if ( !$rsa_pub ) {
-            $@ = $@ ne '' ? "RSA failed: $@" : 'RSA unknown problem';
-            $@ .= ", s=$self->{Selector} d=$self->{Domain}";
-            return;
-        }
-
-        $rsa_pub->use_no_padding;
-        my $verify_result = $rsa_pub->encrypt($signature);
-
-        my $k = $rsa_pub->size;
-        my $expected = calculate_EM( $digest_algorithm, $digest, $k );
-        return 1 if ( $verify_result eq $expected );
-
-        # well, the RSA verification failed; I wonder if the RSA signing
-        # was performed on a different digest value? I think we can check...
-
-        # basically, if the $verify_result has the same prefix as $expected,
-        # then only the digest was different
-
-        my $digest_len = length $digest;
-        my $prefix_len = length($expected) - $digest_len;
-        if (
-            substr( $verify_result, 0, $prefix_len ) eq
-            substr( $expected,      0, $prefix_len ) )
-        {
-            $@ = 'message has been altered';
-            return;
-        }
-
-        $@ = 'bad RSA signature';
-        return;
-
-    } elsif ($k_tag eq 'ed25519') {
-
-        my $ed = $self->cork;
-        if ( !$ed ) {
-            $@ = $@ ne '' ? "Ed25519 failed: $@" : 'Ed25519 unknown problem';
-            $@ .= ", s=$self->{Selector} d=$self->{Domain}";
-            return;
-        }
-
-        my $verify_result = $ed->verify_message($signature, $digest);
-        return $verify_result if ($verify_result == 1);
-
-        $@ = 'bad Ed25519 signature';
-        return;
-
-    }
-
+    return $self->_verify_digest_rsa($digest_algorithm, $digest, $signature) if $k_tag eq 'rsa';
+    return $self->_verify_digest_ed25519($digest_algorithm, $digest, $signature) if $k_tag eq 'ed25519';
+    $@ = 'unsupported key type';
+    return;
 }
 
 1;

@@ -2,7 +2,7 @@ package Mail::DKIM::Algorithm::ed25519_sha256;
 use strict;
 use warnings;
 # VERSION
-# ABSTRACT: edd2519 sha256 algorithm class
+# ABSTRACT: ed25519 sha256 algorithm class
 
 # Copyright 2005-2006 Messiah College. All rights reserved.
 # Jason Long <jlong@messiah.edu>

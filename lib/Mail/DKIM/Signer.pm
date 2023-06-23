@@ -135,6 +135,11 @@ The list of headers signed by default is as follows
     List-Id List-Help List-Unsubscribe List-Subscribe
     List-Post List-Owner List-Archive
 
+=item Tags
+
+An optional hashref of additional tags to be added to the DKIM
+signature generated.
+
 =back
 
 =cut

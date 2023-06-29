@@ -54,8 +54,8 @@ sub new {
     $self->identity( $prms{'Identity'} )     if exists $prms{'Identity'};
     $self->timestamp( $prms{'Timestamp'} )   if defined $prms{'Timestamp'};
     $self->expiration( $prms{'Expiration'} ) if defined $prms{'Expiration'};
+    $self->tags( $prms{'Tags'} ) if defined $prms{'Tags'};
     $self->key( $prms{'Key'} )               if defined $prms{'Key'};
-
     return $self;
 }
 
@@ -457,6 +457,17 @@ sub expiration {
       and $self->set_tag( 'x', shift );
 
     return $self->get_tag('x');
+}
+
+sub tags {
+    my $self = shift;
+    my $tags = shift;
+
+    for my $tag (sort keys %$tags) {
+      $self->set_tag( $tag, $tags->{$tag} );
+    }
+    (@_)
+
 }
 
 # allows the type of signature to determine what "algorithm" gets used

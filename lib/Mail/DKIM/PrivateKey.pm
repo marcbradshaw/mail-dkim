@@ -29,6 +29,8 @@ use warnings;
 use base 'Mail::DKIM::Key';
 use Carp;
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;
+use Crypt::OpenSSL::RSA;
+use Crypt::PK::Ed25519;
 
 =head1 CONSTRUCTOR
 
@@ -94,13 +96,8 @@ The returned object is of type L<Crypt::OpenSSL::RSA>.
 
 =cut
 
-sub convert {
-    use Crypt::OpenSSL::RSA;
-
+sub _convert_rsa {
     my $self = shift;
-
-    $self->data
-      or return;
 
     # have to PKCS1ify the privkey because openssl is too finicky...
     my $pkcs = "-----BEGIN RSA PRIVATE KEY-----\n";
@@ -117,10 +114,10 @@ sub convert {
     eval {
         local $SIG{__DIE__};
         $cork = new_private_key Crypt::OpenSSL::RSA($pkcs);
-	1
+    1
     } || do {
-	$self->errorstr($@);
-	return;
+        $self->errorstr($@);
+        return;
     };
 
     $cork
@@ -131,8 +128,54 @@ sub convert {
     #		return;
 
     $self->cork($cork);
-
     return 1;
+}
+
+sub _convert_ed25519 {
+    my $self = shift;
+    my $cork;
+
+    eval {
+        local $SIG{__DIE__};
+        $cork = new Crypt::PK::Ed25519;
+
+        # Prepend/append with PEM boilerplate
+        my $pem = "-----BEGIN ED25519 PRIVATE KEY-----\n";
+        $pem .= $self->data;
+        $pem .= "\n";
+        $pem .= "-----END ED25519 PRIVATE KEY-----\n";
+
+        # Pass PEM text buffer
+        $cork->import_key(\$pem)
+            or die 'failed to load Ed25519 private key';
+
+        # Alternatively, import_raw_key() could be used,
+        # but requires the 32-byte key, which must be extracted
+        # from the ASN.1 structure first.
+
+    1
+    } || do {
+        $self->errorstr($@);
+        return;
+    };
+
+    $cork
+      or return;
+
+    $self->cork($cork);
+    return 1;
+}
+
+sub convert {
+    my $self = shift;
+
+    $self->data
+      or return;
+
+    return $self->_convert_rsa if $self->{TYPE} eq 'rsa';
+    return $self->_convert_ed25519 if $self->{TYPE} eq 'ed25519';
+    self->errorstr('unsupported key type');
+    return;
 }
 
 #deprecated
@@ -164,16 +207,36 @@ The result should be the signed digest as a binary string.
 
 =cut
 
-sub sign_digest {
+sub _sign_digest_rsa {
     my $self = shift;
     my ( $digest_algorithm, $digest ) = @_;
 
     my $rsa_priv = $self->cork;
     $rsa_priv->use_no_padding;
-
     my $k = $rsa_priv->size;
     my $EM = calculate_EM( $digest_algorithm, $digest, $k );
     return $rsa_priv->decrypt($EM);
+}
+
+sub _sign_digest_ed25519 {
+    my $self = shift;
+    my ( $digest_algorithm, $digest ) = @_;
+
+    my $ed = $self->cork;
+    if ( !$ed ) {
+        $@ = $@ ne '' ? "Ed25519 failed: $@" : 'Ed25519 unknown problem';
+        die;
+    }
+    return $ed->sign_message($digest);
+}
+
+sub sign_digest {
+    my $self = shift;
+    my ( $digest_algorithm, $digest ) = @_;
+
+    return $self->_sign_digest_rsa($digest_algorithm, $digest) if $self->{TYPE} eq 'rsa';
+    return $self->_sign_digest_ed25519($digest_algorithm, $digest) if $self->{TYPE} eq 'ed25519';
+    die 'unsupported key type';
 }
 
 =cut

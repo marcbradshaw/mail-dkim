@@ -440,11 +440,15 @@ sub _check_and_verify_signature {
         return ( 'invalid', $self->{signature_reject_reason} );
     }
 
-    # make sure key is big enough
-    my $keysize = $pkey->cork->size * 8;    # in bits
-    if ( $keysize < 1024 && $self->{Strict} ) {
-        $self->{signature_reject_reason} = "Key length $keysize too short";
-        return ( 'fail', $self->{signature_reject_reason} );
+    # special handling for RSA signatures
+    my $k = $pkey->get_tag('k') || 'rsa';
+    if ($k eq 'rsa') {
+        # make sure key is big enough
+        my $keysize = $pkey->cork->size * 8;    # in bits
+        if ( $keysize < 1024 && $self->{Strict} ) {
+            $self->{signature_reject_reason} = "Key length $keysize too short";
+            return ( 'fail', $self->{signature_reject_reason} );
+        }
     }
 
     # verify signature
@@ -464,6 +468,9 @@ sub _check_and_verify_signature {
         }
         elsif ( $E =~ /^(panic:.*?) at / ) {
             $E = "OpenSSL $1";
+        }
+        elsif ( $E =~ /^FATAL: (.*) at / ) {
+            $E = "Ed25519 $1";
         }
         $result  = 'fail';
         $details = $E;

@@ -14,6 +14,7 @@ use warnings;
 use Mail::DKIM::PublicKey;
 use Mail::DKIM::Algorithm::rsa_sha1;
 use Mail::DKIM::Algorithm::rsa_sha256;
+use Mail::DKIM::Algorithm::ed25519_sha256;
 
 use base 'Mail::DKIM::KeyValueList';
 use Carp;
@@ -120,8 +121,11 @@ sub wantheader {
 
 =head2 algorithm() - get or set the algorithm (a=) field
 
-The algorithm used to generate the signature. Should be either "rsa-sha1",
-an RSA-signed SHA-1 digest, or "rsa-sha256", an RSA-signed SHA-256 digest.
+The algorithm used to generate the signature. Should be one of the
+following:
+- "rsa-sha1",an RSA-signed SHA-1 digest
+- "rsa-sha256", an RSA-signed SHA-256 digest
+- "ed25519-sha256", an Ed25519-signed SHA-256 digest
 
 See also hash_algorithm().
 
@@ -479,6 +483,7 @@ sub get_algorithm_class {
     my $class =
         $algorithm eq 'rsa-sha1'   ? 'Mail::DKIM::Algorithm::rsa_sha1'
       : $algorithm eq 'rsa-sha256' ? 'Mail::DKIM::Algorithm::rsa_sha256'
+      : $algorithm eq 'ed25519-sha256' ? 'Mail::DKIM::Algorithm::ed25519_sha256'
       :                              undef;
     return $class;
 }
@@ -599,6 +604,7 @@ sub hash_algorithm {
     return
         $algorithm eq 'rsa-sha1'   ? 'sha1'
       : $algorithm eq 'rsa-sha256' ? 'sha256'
+      : $algorithm eq 'ed25519-sha256' ? 'sha256'
       :                              undef;
 }
 

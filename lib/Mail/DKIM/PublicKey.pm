@@ -14,6 +14,9 @@ use warnings;
 use base ( 'Mail::DKIM::KeyValueList', 'Mail::DKIM::Key' );
 *calculate_EM = \&Mail::DKIM::Key::calculate_EM;
 
+use Crypt::OpenSSL::RSA;
+use Crypt::PK::Ed25519;
+use MIME::Base64;
 use Mail::DKIM::DNS;
 
 sub new {
@@ -119,7 +122,9 @@ sub fetch_async {
         my $self = $class->parse($strn);
         $self->{Selector} = $prms{'Selector'};
         $self->{Domain}   = $prms{'Domain'};
+        $self->{TYPE}     = $self->get_tag('k') || 'rsa';
         $self->check;
+
         return $on_success->($self);
     };
 
@@ -153,7 +158,7 @@ sub check {
 
     # check key type
     if ( my $k = $self->get_tag('k') ) {
-        unless ( $k eq 'rsa' ) {
+        unless ( $k eq 'rsa' || $k eq 'ed25519' ) {
             die "unsupported key type\n";
         }
     }
@@ -184,6 +189,9 @@ sub check {
         }
         elsif ( $E =~ /^(panic:.*?) at / ) {
             $E = "OpenSSL $1";
+        }
+        elsif ( $E =~ /^FATAL: (.*) at / ) {
+            $E = "Ed25519 $1";
         }
         die "$E\n";
     };
@@ -299,14 +307,8 @@ sub check_hash_algorithm {
 # Create an OpenSSL public key object from the Base64-encoded data
 # found in this public key's DNS record. The OpenSSL object is saved
 # in the "cork" property.
-sub convert {
-    use Crypt::OpenSSL::RSA;
-
+sub _convert_rsa {
     my $self = shift;
-
-    $self->data
-      or return;
-
     # have to PKCS1ify the pubkey because openssl is too finicky...
     my $cert = "-----BEGIN PUBLIC KEY-----\n";
 
@@ -325,8 +327,34 @@ sub convert {
     #		return;
 
     $self->cork($cork);
-
     return 1;
+}
+
+sub _convert_ed25519 {
+    my $self = shift;
+    my $cork = Crypt::PK::Ed25519->new
+      or die 'unable to generate Ed25519 public key object';
+
+    my $keybin = decode_base64($self->data);
+    $cork->import_key_raw($keybin, 'public')
+      or die 'failed to load Ed25519 public key';
+
+    $self->cork($cork);
+    return 1;
+}
+
+sub convert {
+    my $self = shift;
+
+    my $k_tag = $self->get_tag('k');
+    $k_tag = 'rsa' unless defined $k_tag;
+
+    $self->data
+      or return;
+
+    return $self->_convert_rsa if $k_tag eq 'rsa';
+    return $self->_convert_ed25519 if $k_tag eq 'ed25519';
+    die 'unsupported key type';
 }
 
 sub verify {
@@ -446,11 +474,7 @@ sub verify_sha1_digest {
     return $self->verify_digest( 'SHA-1', $digest, $signature );
 }
 
-# verify_digest() - returns true if the digest verifies, false otherwise
-#
-# if false, $@ is set to a description of the problem
-#
-sub verify_digest {
+sub _verify_digest_rsa {
     my $self = shift;
     my ( $digest_algorithm, $digest, $signature ) = @_;
 
@@ -485,6 +509,40 @@ sub verify_digest {
     }
 
     $@ = 'bad RSA signature';
+    return;
+}
+
+sub _verify_digest_ed25519 {
+    my $self = shift;
+    my ( $digest_algorithm, $digest, $signature ) = @_;
+
+    my $ed = $self->cork;
+    if ( !$ed ) {
+        $@ = $@ ne '' ? "Ed25519 failed: $@" : 'Ed25519 unknown problem';
+        $@ .= ", s=$self->{Selector} d=$self->{Domain}";
+        return;
+    }
+
+    my $verify_result = $ed->verify_message($signature, $digest);
+    return $verify_result if ($verify_result == 1);
+
+    $@ = 'bad Ed25519 signature';
+    return;
+}
+
+# verify_digest() - returns true if the digest verifies, false otherwise
+#
+# if false, $@ is set to a description of the problem
+#
+sub verify_digest {
+    my $self = shift;
+    my ( $digest_algorithm, $digest, $signature ) = @_;
+
+    my $k_tag = $self->get_tag('k') || 'rsa';
+
+    return $self->_verify_digest_rsa($digest_algorithm, $digest, $signature) if $k_tag eq 'rsa';
+    return $self->_verify_digest_ed25519($digest_algorithm, $digest, $signature) if $k_tag eq 'ed25519';
+    $@ = 'unsupported key type';
     return;
 }
 

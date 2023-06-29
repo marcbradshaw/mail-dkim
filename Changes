@@ -1,6 +1,8 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+  * Add support for Ed25519 signature types
+    Thanks to  Matthäus Wander @mwander
 
 1.20230212 2023-02-12 UTC
   + Fix typo in ARC signer example code.

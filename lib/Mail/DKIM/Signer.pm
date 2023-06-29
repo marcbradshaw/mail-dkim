@@ -190,16 +190,21 @@ sub init {
     my $self = shift;
     $self->SUPER::init;
 
-    if ( defined $self->{KeyFile} ) {
-        $self->{Key} ||=
-          Mail::DKIM::PrivateKey->load( File => $self->{KeyFile} );
-    }
-
     unless ( $self->{'Algorithm'} ) {
 
         # use default algorithm
         $self->{'Algorithm'} = 'rsa-sha1';
     }
+
+    my $type = 'rsa'; # default
+    $type = 'ed25519' if ( $self->{'Algorithm'} =~ /^ed25519/ );
+
+    if ( defined $self->{KeyFile} ) {
+        $self->{Key} ||=
+          Mail::DKIM::PrivateKey->load( File => $self->{KeyFile},
+            Type => $type );
+    }
+
     unless ( $self->{'Method'} ) {
 
         # use default canonicalization method
@@ -215,6 +220,7 @@ sub init {
         # use default selector
         $self->{'Selector'} = 'unknown';
     }
+
 }
 
 sub finish_header {
@@ -308,6 +314,9 @@ sub finish_body {
         # finished canonicalizing
         $algorithm->finish_body;
 
+        my $type = 'rsa'; # default
+        $type = 'ed25519' if ( $self->{'Algorithm'} =~ /^ed25519/ );
+
         # load the private key file if necessary
         my $signature = $algorithm->signature;
         my $key =
@@ -316,7 +325,8 @@ sub finish_body {
           || $self->{Key}
           || $self->{KeyFile};
         if ( defined($key) && !ref($key) ) {
-            $key = Mail::DKIM::PrivateKey->load( File => $key );
+            $key = Mail::DKIM::PrivateKey->load( File => $key,
+                Type => $type );
         }
         $key
           or die "no key available to sign with\n";

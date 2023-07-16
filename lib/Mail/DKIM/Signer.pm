@@ -261,7 +261,7 @@ sub finish_header {
             die 'invalid method property';
         }
         unless ( $self->{'Domain'} ) {
-            die 'invalid header property';
+            die 'invalid domain property';
         }
         unless ( $self->{'Selector'} ) {
             die 'invalid selector property';

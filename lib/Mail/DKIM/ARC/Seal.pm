@@ -83,6 +83,7 @@ sub new {
     $self->timestamp(
         defined $prms{'Timestamp'} ? $prms{'Timestamp'} : time() );
     $self->expiration( $prms{'Expiration'} ) if defined $prms{'Expiration'};
+    $self->tags( $prms{'Tags'} ) if defined $prms{'Tags'};
     $self->key( $prms{'Key'} )               if defined $prms{'Key'};
 
     return $self;

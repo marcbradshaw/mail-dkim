@@ -53,6 +53,7 @@ sub new {
     $self->selector( $prms{'Selector'} );
     $self->timestamp( $prms{'Timestamp'} )   if defined $prms{'Timestamp'};
     $self->expiration( $prms{'Expiration'} ) if defined $prms{'Expiration'};
+    $self->tags( $prms{'Tags'} ) if defined $prms{'Tags'};
     $self->key( $prms{'Key'} )               if defined $prms{'Key'};
 
     return $self;

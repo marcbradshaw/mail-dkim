@@ -23,6 +23,8 @@ my ($opt, $usage) = describe_options(
   [ "chain=s" => "Chain value. 'ar' means pick it up from Authentication-Results header", {default=>"ar"} ],
   [ "key=s" => "File containing private key, without BEGIN or END lines.", {default=>"private.key"} ],
   [ "debug-canonicalization=s" => "Outputs the canonicalized message to the specified file in addition to computing the DKIM signature. This is helpful for debugging canonicalization methods." ],
+ 	[ "extra-tag=s@" => "Extra tags to use in signing" ],
+	[ "extra-seal-tag=s@" => "Extra tags to use in sealing" ],
   [ "timestamp=i" => "Timestamp to sign with, default to now", {default=>time} ],
   [ "binary" => "Read input in binary mode" ],
   [ "wrap" => "Wrap original email" ],
@@ -48,6 +50,22 @@ if ($opt->binary)
 	binmode STDIN;
 }
 
+my %arc_opt;
+if ($opt->extra_tag) {
+	$arc_opt{Tags} = {};
+  foreach my $extra ($opt->extra_tag->@*) {
+    my ($n, $v) = split /=/, $extra, 2;
+		$arc_opt{Tags}->{$n} = $v;
+  }
+}
+if ($opt->extra_seal_tag) {
+	$arc_opt{SealTags} = {};
+  foreach my $extra ($opt->extra_seal_tag->@*) {
+    my ($n, $v) = split /=/, $extra, 2;
+		$arc_opt{SealTags}->{$n} = $v;
+  }
+}
+
 my $arc = new Mail::DKIM::ARC::Signer(
 		Domain => $opt->domain,
 		SrvId => $opt->srvid,
@@ -56,8 +74,11 @@ my $arc = new Mail::DKIM::ARC::Signer(
 		Selector => $opt->selector,
 		KeyFile => $opt->key,
 		Debug_Canonicalization => $debugfh,
-		Timestamp => $opt->timestamp
-		);
+		Timestamp => $opt->timestamp,
+		%arc_opt,
+);
+
+
 
 while (<STDIN>)
 {

@@ -24,7 +24,7 @@ my ($opt, $usage) = describe_options(
   [ "key=s" => "File containing private key, without BEGIN or END lines.", {default=>"private.key"} ],
   [ "debug-canonicalization=s" => "Outputs the canonicalized message to the specified file in addition to computing the DKIM signature. This is helpful for debugging canonicalization methods." ],
  	[ "extra-tag=s@" => "Extra tags to use in signing" ],
-	[ "extra-seal-tag=s@" => "Extra tags to use in sealing" ],
+  [ "extra-seal-tag=s@" => "Extra tags to use in sealing" ],
   [ "timestamp=i" => "Timestamp to sign with, default to now", {default=>time} ],
   [ "binary" => "Read input in binary mode" ],
   [ "wrap" => "Wrap original email" ],
@@ -40,69 +40,66 @@ if ($opt->help) {
 eval "use Mail::DKIM::TextWrap;" if($opt->wrap);
 
 my $debugfh;
-if (defined $opt->debug_canonicalization)
-{
-	open $debugfh, ">", $opt->debug_canonicalization
-		or die "Error: cannot write ".$opt->debug_canonicalization.": $!\n";
+if (defined $opt->debug_canonicalization)  {
+  open $debugfh, ">", $opt->debug_canonicalization
+    or die "Error: cannot write ".$opt->debug_canonicalization.": $!\n";
 }
-if ($opt->binary)
-{
-	binmode STDIN;
+if ($opt->binary)  {
+  binmode STDIN;
 }
 
 my %arc_opt;
 if ($opt->extra_tag) {
-	$arc_opt{Tags} = {};
-  foreach my $extra ($opt->extra_tag->@*) {
+  $arc_opt{Tags} = {};
+  for my $extra ($opt->extra_tag->@*) {
     my ($n, $v) = split /=/, $extra, 2;
-		$arc_opt{Tags}->{$n} = $v;
+    $arc_opt{Tags}->{$n} = $v;
   }
 }
 if ($opt->extra_seal_tag) {
-	$arc_opt{SealTags} = {};
-  foreach my $extra ($opt->extra_seal_tag->@*) {
+  $arc_opt{SealTags} = {};
+  for my $extra ($opt->extra_seal_tag->@*) {
     my ($n, $v) = split /=/, $extra, 2;
-		$arc_opt{SealTags}->{$n} = $v;
+    $arc_opt{SealTags}->{$n} = $v;
   }
 }
 
 my $arc = new Mail::DKIM::ARC::Signer(
-		Domain => $opt->domain,
-		SrvId => $opt->srvid,
-		Chain => $opt->chain,
-		Algorithm => $opt->algorithm,
-		Selector => $opt->selector,
-		KeyFile => $opt->key,
-		Debug_Canonicalization => $debugfh,
-		Timestamp => $opt->timestamp,
-		%arc_opt,
+  Domain => $opt->domain,
+  SrvId => $opt->srvid,
+  Chain => $opt->chain,
+  Algorithm => $opt->algorithm,
+  Selector => $opt->selector,
+  KeyFile => $opt->key,
+  Debug_Canonicalization => $debugfh,
+  Timestamp => $opt->timestamp,
+  %arc_opt,
 );
 
 
 
 while (<STDIN>)
 {
-	unless ($opt->binary)
-	{
-		chomp $_;
-		s/\015?$/\015\012/s;
-	}
-	$arc->PRINT($_);
+  unless ($opt->binary) {
+    chomp $_;
+    s/\015?$/\015\012/s;
+  }
+  $arc->PRINT($_);
 }
 $arc->CLOSE;
 
 if ($debugfh)
 {
-	close $debugfh;
-	print STDERR "wrote canonicalized message to ".$opt->debug_canonicalization."\n";
+  close $debugfh;
+  print STDERR "wrote canonicalized message to ".$opt->debug_canonicalization."\n";
 }
 
 print "RESULT IS " . $arc->result() . "\n";
 
 if( $arc->result eq "sealed") {
-	print join("\n",$arc->as_strings) . "\n";
+  print join("\n",$arc->as_strings) . "\n";
 } else {
-	print "REASON IS " . $arc->{details} . "\n";
+  print "REASON IS " . $arc->{details} . "\n";
 }
 
 __END__

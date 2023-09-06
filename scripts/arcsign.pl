@@ -18,7 +18,7 @@ my ($opt, $usage) = describe_options(
   "%c %o < original_email.txt",
   [ "selector=s" => "Signing selector", {default=>'selector1'} ],
   [ "domain=s" => "Signing domain" ],
-  [ "algorithm=s" => "Algorithm to sign with", {default=>"sha-256"} ],
+  [ "algorithm=s" => "Algorithm to sign with", {default=>"rsa-sha256"} ],
   [ "srvid=s" => "Authentication-Results server domain, defaults to signing domain" ],
   [ "chain=s" => "Chain value. 'ar' means pick it up from Authentication-Results header", {default=>"ar"} ],
   [ "key=s" => "File containing private key, without BEGIN or END lines.", {default=>"private.key"} ],

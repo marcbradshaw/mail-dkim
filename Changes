@@ -1,6 +1,7 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+  * Option to add custom tags to generated ARC signatures and seals
 
 1.20230630 2023-06-30 UTC
   * Add support for Ed25519 signature types

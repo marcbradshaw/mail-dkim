@@ -149,6 +149,16 @@ The list of headers signed by default is as follows
     List-Id List-Help List-Unsubscribe List-Subscribe
     List-Post List-Owner List-Archive
 
+=item Tags
+
+An optional hashref of additional tags to be added to the ARC
+signature generated.
+
+=item SealTags
+
+An optional hashref of additional tags to be added to the ARC
+seal generated.
+
 =back
 
 =cut
@@ -384,6 +394,10 @@ sub finish_header {
             KeyFile   => $self->{KeyFile},
             ( $self->{Timestamp} ? ( Timestamp => $self->{Timestamp} ) : () ),
             ( $self->{Expiration} ? ( Expiration => $self->{Expiration} ) : () ),
+            (
+                $self->{'Tags'} ? ( Tags => $self->{'Tags'} )
+                : ()
+            ),
         )
     );
 
@@ -450,6 +464,11 @@ sub finish_body {
             KeyFile   => $self->{KeyFile},
             ( $self->{Timestamp} ? ( Timestamp => $self->{Timestamp} ) : () ),
             ( $self->{Expiration} ? ( Expiration => $self->{Expiration} ) : () ),
+            (
+                $self->{'SealTags'} ? ( Tags => $self->{'SealTags'} )
+                : ()
+            ),
+
         )
     );
 

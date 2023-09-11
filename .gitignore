@@ -5,3 +5,4 @@ Makefile
 patches
 .pc
 Mail-DKIM-*
+.build

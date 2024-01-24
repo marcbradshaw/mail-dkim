@@ -254,7 +254,7 @@ sub add_signature {
         my ($instance);
         $instance = $signature->instance() || '';
 
-        if ( $instance !~ m{^\d+$} or $instance < 1 or $instance > 1024 ) {
+        if ( $instance !~ m{^\d+$} or $instance < 1 or $instance > $MAX_SIGNATURES_TO_PROCESS ) {
             $self->{result}  = 'fail';                                   # bogus
             $self->{details} = sprintf "Invalid ARC-Seal instance '%s'",
               $instance;
@@ -277,7 +277,7 @@ sub add_signature {
     elsif ( $signature->isa('Mail::DKIM::ARC::MessageSignature') ) {
         my $instance = $signature->instance() || '';
 
-        if ( $instance !~ m{^\d+$} or $instance < 1 or $instance > 1024 ) {
+        if ( $instance !~ m{^\d+$} or $instance < 1 or $instance > $MAX_SIGNATURES_TO_PROCESS ) {
             $self->{result} = 'fail';    # bogus
             $self->{details} =
               sprintf "Invalid ARC-Message-Signature instance '%s'", $instance;

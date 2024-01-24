@@ -1,6 +1,8 @@
 This file summarizes what's changed between releases of Mail-DKIM.
 
 {{$NEXT}}
+
+1.20240124 2024-01-24 UTC
   * ARC: Return fail for any ARC set with an instance number greater than 50.
     This brings ARC verification in line with DKIM verification limits.
 

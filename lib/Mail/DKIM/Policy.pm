@@ -71,7 +71,7 @@ sub fetch_async {
             next unless $rr->type eq 'TXT';
 
             # join with no intervening spaces, RFC 5617
-            if ( Net::DNS->VERSION >= 0.69 ) {
+            if ( $rr->can('txtdata') ) {
 
                 # must call txtdata() in a list context
                 $strn = join '', $rr->txtdata;

@@ -105,6 +105,10 @@ is written to the referenced string or file handle.
 
 If true, rejects sha1 hashes and signing keys shorter than 1024 bits.
 
+=item ForbidLength
+
+If true, reject signatures with a length l= tag.
+
 =back
 
 =cut
@@ -424,6 +428,13 @@ sub _check_and_verify_signature {
     unless ( check_signature_identity($signature) ) {
         $self->{signature_reject_reason} = 'bad identity';
         return ( 'invalid', $self->{signature_reject_reason} );
+    }
+
+    # check for forbidden l tag
+    my $length = $signature->get_tag('l');
+    if ( $self->{ForbidLength} && defined $length ) {
+        $self->{signature_reject_reason} = "Signatures with a length tag are forbidden here";
+        return ( 'fail', $self->{signature_reject_reason} );
     }
 
     # get public key
